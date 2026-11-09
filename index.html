@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Gig — Smart Part-Time Job Connect</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            400: '#818cf8',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-logo {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        }
+        .hero-gradient {
+            background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.15), transparent 40%),
+                        radial-gradient(circle at bottom left, rgba(168, 85, 247, 0.1), transparent 40%);
+        }
+    </style>
+    <!-- Socket.io Client Library -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col selection:bg-brand-500 selection:text-white">
+
+    <!-- TOP NAVIGATION BAR -->
+    <nav class="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-md border-b border-slate-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            
+            <!-- Logo & Brand -->
+            <a href="#" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 gradient-logo rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-brand-500/20 group-hover:scale-105 transition-transform">
+                    CG
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-extrabold text-lg text-white tracking-tight leading-none">Campus Gig</span>
+                    <span class="text-[10px] text-brand-400 font-semibold tracking-widest uppercase">Smart Job Connect</span>
+                </div>
+            </a>
+
+            <!-- Desktop Nav Links -->
+            <div class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-400">
+                <a href="#feed" class="hover:text-white transition-colors">Explore Jobs</a>
+                <a href="#schedule" class="hover:text-white transition-colors">Schedule Builder</a>
+                <a href="#employers" class="hover:text-white transition-colors">For Employers</a>
+            </div>
+
+            <!-- Auth Buttons & Mobile Menu Toggle -->
+            <div class="flex items-center gap-3">
+                <div class="hidden sm:flex items-center gap-3">
+                    <button onclick="openAuthModal('login')" class="text-sm font-semibold text-slate-300 hover:text-white px-3 py-2 transition-colors">
+                        Log In
+                    </button>
+                    <button onclick="openAuthModal('signup')" class="bg-brand-600 hover:bg-brand-500 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-lg shadow-brand-600/30 hover:shadow-brand-500/50 transition-all">
+                        Sign Up
+                    </button>
+                </div>
+
+                <!-- Hamburger Button (Mobile) -->
+                <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 focus:outline-none">
+                    <svg id="menuIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu Dropdown -->
+        <div id="mobileMenu" class="hidden md:hidden bg-slate-950/95 border-b border-slate-800 px-4 pt-2 pb-6 space-y-4">
+            <a href="#feed" onclick="toggleMobileMenu()" class="block text-slate-300 hover:text-white font-medium py-2">Explore Jobs</a>
+            <a href="#schedule" onclick="toggleMobileMenu()" class="block text-slate-300 hover:text-white font-medium py-2">Schedule Builder</a>
+            <a href="#employers" onclick="toggleMobileMenu()" class="block text-slate-300 hover:text-white font-medium py-2">For Employers</a>
+            <div class="pt-2 border-t border-slate-800 flex flex-col gap-2">
+                <button onclick="toggleMobileMenu(); openAuthModal('login')" class="w-full text-center py-2.5 text-sm font-semibold text-slate-300 border border-slate-800 rounded-xl">
+                    Log In
+                </button>
+                <button onclick="toggleMobileMenu(); openAuthModal('signup')" class="w-full text-center py-2.5 text-sm font-semibold text-white bg-brand-600 rounded-xl">
+                    Sign Up
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="relative py-20 lg:py-28 overflow-hidden hero-gradient border-b border-slate-800/60">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <!-- Hero Left Content -->
+                <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-xs font-medium text-brand-300">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        Live in Pune • Verified Campus Employers Only
+                    </div>
+                    
+                    <h1 class="text-4xl sm:text-6xl font-black text-white tracking-tight leading-[1.1]">
+                        Earn around your classes. <br>
+                        <span class="bg-gradient-to-r from-brand-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                            Zero timetable conflicts.
+                        </span>
+                    </h1>
+
+                    <p class="text-slate-400 text-base sm:text-lg max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                        Campus Gig matches your college free hours and hostel location with nearby shift openings at verified local stores.
+                    </p>
+
+                    <!-- Hero Search Input Bar -->
+                    <div class="pt-2 max-w-xl mx-auto lg:mx-0">
+                        <div class="p-2 bg-slate-900/90 border border-slate-800 rounded-2xl flex flex-col sm:flex-row gap-2 shadow-2xl">
+                            <input type="text" placeholder="Enter campus or location (e.g. MIT ADT, Hadapsar)..." class="bg-transparent px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none flex-grow">
+                            <button onclick="document.getElementById('feed').scrollIntoView()" class="bg-brand-600 hover:bg-brand-500 text-white text-sm font-bold px-6 py-3 rounded-xl transition-all shadow-lg shadow-brand-600/30">
+                                Find Shifts
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="pt-6 grid grid-cols-3 gap-4 max-w-md mx-auto lg:mx-0 border-t border-slate-800/80 text-center lg:text-left">
+                        <div>
+                            <p class="text-2xl font-extrabold text-white">100%</p>
+                            <p class="text-xs text-slate-500 font-medium">Class Conflict Free</p>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-extrabold text-white">GSTIN</p>
+                            <p class="text-xs text-slate-500 font-medium">Verified Stores</p>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-extrabold text-white">1-Click</p>
+                            <p class="text-xs text-slate-500 font-medium">Fast Applications</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hero Right Preview Card -->
+                <div class="lg:col-span-5">
+                    <div class="relative mx-auto max-w-sm sm:max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl shadow-brand-900/20">
+                        <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+                            <div class="flex items-center gap-3">
+                                <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+                                <div class="w-3 h-3 rounded-full bg-amber-500/80"></div>
+                                <div class="w-3 h-3 rounded-full bg-emerald-500/80"></div>
+                            </div>
+                            <span class="text-xs font-mono text-slate-500">Live 4D Match Feed</span>
+                        </div>
+
+                        <!-- Card Item 1 -->
+                        <div class="mt-4 p-4 rounded-2xl bg-slate-800/50 border border-slate-700/50 space-y-3">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <h4 class="font-bold text-white text-sm">Decathlon — Floor Associate</h4>
+                                    <p class="text-xs text-slate-400">Amanora Mall (2.1 km away)</p>
+                                </div>
+                                <span class="px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold rounded-lg">
+                                    94% Match
+                                </span>
+                            </div>
+                            <div class="flex items-center justify-between text-xs text-slate-300">
+                                <span>🕒 4:30 PM - 8:30 PM</span>
+                                <span class="font-bold text-white">₹180 / hr</span>
+                            </div>
+                            <button onclick="openAuthModal('signup')" class="w-full py-2 bg-brand-600/20 hover:bg-brand-600 border border-brand-500/40 text-brand-300 hover:text-white text-xs font-bold rounded-xl transition-all">
+                                Quick Apply
+                            </button>
+                        </div>
+
+                        <!-- Card Item 2 -->
+                        <div class="mt-3 p-4 rounded-2xl bg-slate-800/30 border border-slate-800 space-y-3">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <h4 class="font-bold text-white text-sm">Zudio — Cashier & Inventory</h4>
+                                    <p class="text-xs text-slate-400">Hadapsar (1.2 km away)</p>
+                                </div>
+                                <span class="px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold rounded-lg">
+                                    89% Match
+                                </span>
+                            </div>
+                            <div class="flex items-center justify-between text-xs text-slate-300">
+                                <span>🕒 5:00 PM - 9:00 PM</span>
+                                <span class="font-bold text-white">₹160 / hr</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN APP INTERFACE: EXPLORE JOBS & RADIUS FILTER -->
+    <section id="feed" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-grow">
+        
+        <!-- Controls & Filter Bar -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-8 border-b border-slate-800">
+            <div>
+                <h2 class="text-2xl font-bold text-white tracking-tight">Recommended Shift Openings</h2>
+                <p class="text-slate-400 text-sm mt-1">Filtered in real-time based on campus distance and class hours.</p>
+            </div>
+
+            <!-- Radius Filter Control -->
+            <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex items-center gap-4 min-w-[300px]">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-400 whitespace-nowrap">Distance Radius:</span>
+                <input id="radiusRange" type="range" min="1" max="5" value="3" class="w-full accent-brand-500 bg-slate-800 h-2 rounded-lg cursor-pointer" oninput="filterJobsByRadius(this.value)">
+                <span id="radiusVal" class="text-sm font-extrabold text-brand-400 whitespace-nowrap">3 km</span>
+            </div>
+        </div>
+
+        <!-- Job Cards Grid -->
+        <div id="jobGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+            
+            <!-- Job Card 1 -->
+            <div class="job-card bg-slate-900 rounded-2xl p-6 border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between space-y-4" data-distance="2.1">
+                <div class="space-y-3">
+                    <div class="flex items-start justify-between">
+                        <div class="w-10 h-10 rounded-xl bg-blue-600/20 text-blue-400 flex items-center justify-center font-bold text-lg">
+                            D
+                        </div>
+                        <span class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold rounded-lg">
+                            94% Match
+                        </span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-white text-lg">Floor Associate</h3>
+                        <p class="text-sm text-slate-400">Decathlon • Amanora Mall</p>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-slate-300">
+                        <span class="px-2 py-1 bg-slate-800 rounded-md border border-slate-700">📍 2.1 km</span>
+                        <span class="px-2 py-1 bg-slate-800 rounded-md border border-slate-700">🕒 4:30 PM - 8:30 PM</span>
+                    </div>
+                </div>
+                <div class="pt-4 border-t border-slate-800 flex items-center justify-between">
+                    <div>
+                        <span class="text-xs text-slate-500 font-medium">Hourly Pay</span>
+                        <p class="font-extrabold text-white text-base">₹180 / hr</p>
+                    </div>
+                    <button onclick="openAuthModal('login')" class="bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all">
+                        1-Click Apply
+                    </button>
+                </div>
+            </div>
+
+            <!-- Job Card 2 -->
+            <div class="job-card bg-slate-900 rounded-2xl p-6 border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between space-y-4" data-distance="1.2">
+                <div class="space-y-3">
+                    <div class="flex items-start justify-between">
+                        <div class="w-10 h-10 rounded-xl bg-purple-600/20 text-purple-400 flex items-center justify-center font-bold text-lg">
+                            Z
+                        </div>
+                        <span class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold rounded-lg">
+                            89% Match
+                        </span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-white text-lg">Cashier & Inventory Assistant</h3>
+                        <p class="text-sm text-slate-400">Zudio • Hadapsar</p>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-slate-300">
+                        <span class="px-2 py-1 bg-slate-800 rounded-md border border-slate-700">📍 1.2 km</span>
+                        <span class="px-2 py-1 bg-slate-800 rounded-md border border-slate-700">🕒 5:00 PM - 9:00 PM</span>
+                    </div>
+                </div>
+                <div class="pt-4 border-t border-slate-800 flex items-center justify-between">
+                    <div>
+                        <span class="text-xs text-slate-500 font-medium">Hourly Pay</span>
+                        <p class="font-extrabold text-white text-base">₹160 / hr</p>
+                    </div>
+                    <button onclick="openAuthModal('login')" class="bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all">
+                        1-Click Apply
+                    </button>
+                </div>
+            </div>
+
+            <!-- Job Card 3 -->
+            <div class="job-card bg-slate-900 rounded-2xl p-6 border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between space-y-4" data-distance="0.8">
+                <div class="space-y-3">
+                    <div class="flex items-start justify-between">
+                        <div class="w-10 h-10 rounded-xl bg-red-600/20 text-red-400 flex items-center justify-center font-bold text-lg">
+                            M
+                        </div>
+                        <span class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold rounded-lg">
+                            85% Match
+                        </span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-white text-lg">Evening Crew Member</h3>
+                        <p class="text-sm text-slate-400">McDonald's • Loni Kalbhor</p>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-slate-300">
+                        <span class="px-2 py-1 bg-slate-800 rounded-md border border-slate-700">📍 0.8 km</span>
+                        <span class="px-2 py-1 bg-slate-800 rounded-md border border-slate-700">🕒 6:00 PM - 10:00 PM</span>
+                    </div>
+                </div>
+                <div class="pt-4 border-t border-slate-800 flex items-center justify-between">
+                    <div>
+                        <span class="text-xs text-slate-500 font-medium">Hourly Pay</span>
+                        <p class="font-extrabold text-white text-base">₹150 / hr</p>
+                    </div>
+                    <button onclick="openAuthModal('login')" class="bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all">
+                        1-Click Apply
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- No Jobs Fallback Message -->
+        <div id="noJobsMsg" class="hidden text-center py-12 border border-slate-800 rounded-2xl bg-slate-900/40 mt-8">
+            <p class="text-slate-400 text-sm">No shift openings found within the selected distance radius.</p>
+            <button onclick="document.getElementById('radiusRange').value = 5; filterJobsByRadius(5);" class="mt-3 text-xs font-bold text-brand-400 hover:underline">
+                Expand radius to 5 km
+            </button>
+        </div>
+    </section>
+
+    <!-- INTERACTIVE SCHEDULE BUILDER SECTION -->
+    <section id="schedule" class="py-16 bg-slate-900/60 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-white tracking-tight">Interactive Schedule Builder</h2>
+                    <p class="text-slate-400 text-sm mt-1">Click any time slot below to toggle between class hours and available shift slots.</p>
+                </div>
+                <div class="px-4 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs font-semibold text-slate-300">
+                    Total Free Availability: <span id="freeHoursCount" class="text-emerald-400 font-bold">20</span> hrs/week
+                </div>
+            </div>
+
+            <!-- Schedule Matrix Grid -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 overflow-x-auto shadow-2xl">
+                <div class="min-w-[600px] grid grid-cols-7 gap-3 text-center text-xs font-semibold">
+                    <div class="text-slate-500 py-2">Time Slot</div>
+                    <div class="text-slate-300 py-2">Mon</div>
+                    <div class="text-slate-300 py-2">Tue</div>
+                    <div class="text-slate-300 py-2">Wed</div>
+                    <div class="text-slate-300 py-2">Thu</div>
+                    <div class="text-slate-300 py-2">Fri</div>
+                    <div class="text-slate-300 py-2">Sat</div>
+
+                    <!-- Row 1 (4-hour slot) -->
+                    <div class="text-slate-400 font-mono py-3 flex items-center justify-center">09:00 - 13:00</div>
+                    <button onclick="toggleSlot(this, 4)" class="slot-btn py-3 bg-red-500/10 text-red-400 border border-red-500/30 rounded-xl transition-all" data-free="false">Class (Blocked)</button>
+                    <button onclick="toggleSlot(this, 4)" class="slot-btn py-3 bg-red-500/10 text-red-400 border border-red-500/30 rounded-xl transition-all" data-free="false">Class (Blocked)</button>
+                    <button onclick="toggleSlot(this, 4)" class="slot-btn py-3 bg-red-500/10 text-red-400 border border-red-500/30 rounded-xl transition-all" data-free="false">Class (Blocked)</button>
+                    <button onclick="toggleSlot(this, 4)" class="slot-btn py-3 bg-red-500/10 text-red-400 border border-red-500/30 rounded-xl transition-all" data-free="false">Class (Blocked)</button>
+                    <button onclick="toggleSlot(this, 4)" class="slot-btn py-3 bg-red-500/10 text-red-400 border border-red-500/30 rounded-xl transition-all" data-free="false">Class (Blocked)</button>
+                    <button onclick="toggleSlot(this, 4)" class="slot-btn py-3 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-xl transition-all" data-free="true">Free Slot</button>
+
+                    <!-- Row 2 (4-hour slot) -->
+                    <div class="text-slate-400 font-mono py-3 flex items-center justify-center">16:00 - 20:00</div>
+                    <button onclick="toggleSlot(this, 4)" class="slot-btn py-3 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-xl transition-all" data-free="true">Free Slot</button>
+                    <button onclick="toggleSlot(this, 4)" class="slot-btn py-3 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-xl transition-all" data-free="true">Free Slot</button>
+                    <button onclick="toggleSlot(this, 4)" class="slot-btn py-3 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-xl transition-all" data-free="true">Free Slot</button>
+                    <button onclick="toggleSlot(this, 4)" class="slot-btn py-3 bg-red-500/10 text-red-400 border border-red-500/30 rounded-xl transition-all" data-free="false">Lab (Blocked)</button>
+                    <button onclick="toggleSlot(this, 4)" class="slot-btn py-3 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-xl transition-all" data-free="true">Free Slot</button>
+                    <button onclick="toggleSlot(this, 4)" class="slot-btn py-3 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-xl transition-all" data-free="true">Free Slot</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- EMPLOYER PARTNER CTA BANNER -->
+    <section id="employers" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <div class="bg-gradient-to-r from-brand-900/60 via-slate-900 to-slate-900 border border-brand-500/30 rounded-3xl p-8 lg:p-12 flex flex-col md:flex-row items-center justify-between gap-8">
+            <div class="space-y-3 max-w-2xl text-center md:text-left">
+                <span class="px-3 py-1 bg-brand-500/20 text-brand-300 text-xs font-bold rounded-full border border-brand-500/30">
+                    For Local Store Managers & Businesses
+                </span>
+                <h3 class="text-2xl sm:text-3xl font-extrabold text-white">Hire verified campus talent for flexible store shifts</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    Post shift openings, verify your business with GSTIN, and recruit reliable college students with matching free hours.
+                </p>
+            </div>
+            <button onclick="openAuthModal('signup')" class="bg-white hover:bg-slate-100 text-slate-950 font-bold px-6 py-3.5 rounded-xl shadow-xl transition-all text-sm whitespace-nowrap">
+                Register Store Dashboard
+            </button>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-950 border-t border-slate-900 py-10 text-slate-500 text-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+                <div class="w-6 h-6 gradient-logo rounded-md flex items-center justify-center text-white font-black text-xs">CG</div>
+                <span class="font-bold text-slate-300">Campus Gig</span>
+                <span>— Smart Part-Time Job Connect</span>
+            </div>
+            <p>© Campus Gig Platform. Designed for verified campus job matching.</p>
+        </div>
+    </footer>
+
+    <!-- AUTHENTICATION MODAL (LOGIN / SIGNUP) -->
+    <div id="authModal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-6 sm:p-8 relative shadow-2xl">
+            
+            <!-- Close Button -->
+            <button onclick="closeAuthModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white text-lg font-bold">
+                ✕
+            </button>
+
+            <!-- Modal Header -->
+            <div class="mb-6">
+                <h3 id="modalTitle" class="text-2xl font-bold text-white tracking-tight">Log In to Campus Gig</h3>
+                <p id="modalSubtitle" class="text-slate-400 text-sm mt-1">Enter your credentials to access your job feed.</p>
+            </div>
+
+            <!-- Form -->
+            <form onsubmit="handleAuthSubmit(event)" class="space-y-4">
+                <div id="nameField" class="hidden space-y-1">
+                    <label class="text-xs font-semibold text-slate-300">Full Name</label>
+                    <input type="text" placeholder="Sandip Aryal" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:border-brand-500 focus:outline-none">
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-xs font-semibold text-slate-300">Email Address</label>
+                    <input type="email" required placeholder="student@mitadt.edu.in" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:border-brand-500 focus:outline-none">
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-xs font-semibold text-slate-300">Password</label>
+                    <input type="password" required placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:border-brand-500 focus:outline-none">
+                </div>
+
+                <button type="submit" id="modalSubmitBtn" class="w-full py-3 bg-brand-600 hover:bg-brand-500 text-white font-bold text-sm rounded-xl shadow-lg shadow-brand-600/30 transition-all mt-2">
+                    Log In
+                </button>
+            </form>
+
+            <!-- Toggle between Login & Signup -->
+            <div class="mt-6 pt-4 border-t border-slate-800 text-center text-xs text-slate-400">
+                <span id="modalToggleText">Don't have an account?</span>
+                <button id="modalToggleBtn" onclick="toggleAuthMode()" class="text-brand-400 font-bold hover:underline ml-1">
+                    Sign Up
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT CONTROLS -->
+    <script>
+       const API_BASE = 'http://localhost:5000/api';
+const socket = io('http://localhost:5000');
+	
+// Listen for instant WebSocket updates
+socket.on('job_updated', (data) => {
+    console.log('Shift updated live:', data);
+    const currentRadius = document.getElementById('radiusRange').value;
+    filterJobsByRadius(currentRadius);
+});
+
+let currentAuthMode = 'login';
+let totalFreeHours = 20;
+
+// Auth Modal Controls
+function openAuthModal(mode) {
+    currentAuthMode = mode;
+    const modal = document.getElementById('authModal');
+    const title = document.getElementById('modalTitle');
+    const subtitle = document.getElementById('modalSubtitle');
+    const submitBtn = document.getElementById('modalSubmitBtn');
+    const nameField = document.getElementById('nameField');
+    const toggleText = document.getElementById('modalToggleText');
+    const toggleBtn = document.getElementById('modalToggleBtn');
+
+    if (mode === 'signup') {
+        title.innerText = 'Create your Account';
+        subtitle.innerText = 'Start matching part-time jobs around your classes.';
+        submitBtn.innerText = 'Create Account';
+        nameField.classList.remove('hidden');
+        toggleText.innerText = 'Already have an account?';
+        toggleBtn.innerText = 'Log In';
+    } else {
+        title.innerText = 'Log In to Campus Gig';
+        subtitle.innerText = 'Enter your credentials to access your job feed.';
+        submitBtn.innerText = 'Log In';
+        nameField.classList.add('hidden');
+        toggleText.innerText = "Don't have an account?";
+        toggleBtn.innerText = 'Sign Up';
+    }
+
+    modal.classList.remove('hidden');
+}
+
+function closeAuthModal() {
+    document.getElementById('authModal').classList.add('hidden');
+}
+
+function toggleAuthMode() {
+    openAuthModal(currentAuthMode === 'login' ? 'signup' : 'login');
+}
+
+// Real HTTP Auth Request to Express Backend
+async function handleAuthSubmit(e) {
+    e.preventDefault();
+    const email = e.target.querySelector('input[type="email"]').value;
+    const password = e.target.querySelector('input[type="password"]').value;
+    const name = e.target.querySelector('input[type="text"]')?.value;
+
+    const endpoint = currentAuthMode === 'signup' ? `${API_BASE}/auth/register` : `${API_BASE}/auth/login`;
+    const payload = currentAuthMode === 'signup' ? { name, email, password } : { email, password };
+
+    try {
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+            localStorage.setItem('token', data.token);
+            alert(currentAuthMode === 'login' ? 'Logged in successfully!' : 'Account created successfully!');
+            closeAuthModal();
+        } else {
+            alert(data.message || 'Authentication failed');
+        }
+    } catch (err) {
+        alert('Could not connect to backend server');
+    }
+}
+
+// Mobile Menu Toggle
+function toggleMobileMenu() {
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.toggle('hidden');
+}
+
+// Real API Fetch Job Radius Filtering
+async function filterJobsByRadius(val) {
+    document.getElementById('radiusVal').innerText = val + ' km';
+
+    try {
+        const response = await fetch(`${API_BASE}/jobs?radius=${val}`);
+        const jobs = await response.json();
+
+        const cards = document.querySelectorAll('.job-card');
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+            const cardDistance = parseFloat(card.getAttribute('data-distance'));
+            if (cardDistance <= parseFloat(val)) {
+                card.style.display = 'flex';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        const noJobsMsg = document.getElementById('noJobsMsg');
+        if (visibleCount === 0 && jobs.length === 0) {
+            noJobsMsg.classList.remove('hidden');
+        } else {
+            noJobsMsg.classList.add('hidden');
+        }
+    } catch (err) {
+        console.log('Filtering locally fallback...');
+    }
+}
+
+// Schedule Slot Toggle & Hours Calculation
+function toggleSlot(btn, hours) {
+    const isFree = btn.getAttribute('data-free') === 'true';
+
+    if (isFree) {
+        btn.innerText = 'Class (Blocked)';
+        btn.className = 'slot-btn py-3 bg-red-500/10 text-red-400 border border-red-500/30 rounded-xl transition-all';
+        btn.setAttribute('data-free', 'false');
+        totalFreeHours = Math.max(0, totalFreeHours - hours);
+    } else {
+        btn.innerText = 'Free Slot';
+        btn.className = 'slot-btn py-3 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-xl transition-all';
+        btn.setAttribute('data-free', 'true');
+        totalFreeHours += hours;
+    }
+
+    document.getElementById('freeHoursCount').innerText = totalFreeHours;
+}
+    </script>
+</body>
+</html>

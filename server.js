@@ -1,0 +1,41 @@
+const express = require('express');
+const http = require('http');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const { Server } = require('socket.io');
+require('dotenv').config();
+
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: { origin: '*', methods: ['GET', 'POST'] }
+});
+
+app.use(cors());
+app.use(express.json());
+app.set('io', io);
+
+// Database Connection
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('MongoDB Connected'))
+  .catch(err => console.error('Database connection error:', err));
+
+// Routes
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/jobs', require('./routes/jobs'));
+
+// WebSocket Event Handler
+io.on('connection', (socket) => {
+  console.log('Client connected:', socket.id);
+
+  socket.on('schedule_updated', (data) => {
+    socket.broadcast.emit('availability_changed', data);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Client disconnected:', socket.id);
+  });
+});
+
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
