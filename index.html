@@ -63,12 +63,26 @@
 
             <!-- Auth Buttons & Mobile Menu Toggle -->
             <div class="flex items-center gap-3">
-                <div class="hidden sm:flex items-center gap-3">
+                <!-- Logged Out State -->
+                <div id="guestNavActions" class="hidden sm:flex items-center gap-3">
                     <button onclick="openAuthModal('login')" class="text-sm font-semibold text-slate-300 hover:text-white px-3 py-2 transition-colors">
                         Log In
                     </button>
                     <button onclick="openAuthModal('signup')" class="bg-brand-600 hover:bg-brand-500 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-lg shadow-brand-600/30 hover:shadow-brand-500/50 transition-all">
                         Sign Up
+                    </button>
+                </div>
+
+                <!-- Logged In User State (Hidden by default) -->
+                <div id="userNavActions" class="hidden items-center gap-3">
+                    <div class="flex items-center gap-2.5 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl">
+                        <div id="navUserAvatar" class="w-7 h-7 gradient-logo rounded-lg flex items-center justify-center text-white font-bold text-xs">
+                            U
+                        </div>
+                        <span id="navUserName" class="text-sm font-semibold text-white">User</span>
+                    </div>
+                    <button onclick="logoutUser()" class="text-xs font-semibold text-slate-400 hover:text-red-400 px-2.5 py-2 rounded-lg hover:bg-slate-900 transition-colors">
+                        Log Out
                     </button>
                 </div>
 
@@ -81,12 +95,14 @@
             </div>
         </div>
 
-        <!-- Mobile Navigation Menu Dropdown -->
+        <!-- Mobile Navigation Menu Dropdown (Single Unified Menu) -->
         <div id="mobileMenu" class="hidden md:hidden bg-slate-950/95 border-b border-slate-800 px-4 pt-2 pb-6 space-y-4">
             <a href="#feed" onclick="toggleMobileMenu()" class="block text-slate-300 hover:text-white font-medium py-2">Explore Jobs</a>
             <a href="#schedule" onclick="toggleMobileMenu()" class="block text-slate-300 hover:text-white font-medium py-2">Schedule Builder</a>
             <a href="#employers" onclick="toggleMobileMenu()" class="block text-slate-300 hover:text-white font-medium py-2">For Employers</a>
-            <div class="pt-2 border-t border-slate-800 flex flex-col gap-2">
+            
+            <!-- Mobile Logged Out State -->
+            <div id="mobileGuestActions" class="pt-2 border-t border-slate-800 flex flex-col gap-2">
                 <button onclick="toggleMobileMenu(); openAuthModal('login')" class="w-full text-center py-2.5 text-sm font-semibold text-slate-300 border border-slate-800 rounded-xl">
                     Log In
                 </button>
@@ -94,11 +110,25 @@
                     Sign Up
                 </button>
             </div>
+
+            <!-- Mobile Logged In State (Hidden by default) -->
+            <div id="mobileUserActions" class="hidden pt-2 border-t border-slate-800 flex flex-col gap-3">
+                <div class="flex items-center gap-3 px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl">
+                    <div class="w-8 h-8 rounded-lg gradient-logo text-white flex items-center justify-center font-bold text-sm" id="mobileUserAvatarInitial">U</div>
+                    <div class="flex flex-col">
+                        <span id="mobileUserNameDisplay" class="text-xs font-bold text-white">Account</span>
+                        <span class="text-[10px] text-slate-400">Logged In</span>
+                    </div>
+                </div>
+                <button onclick="toggleMobileMenu(); logoutUser()" class="w-full text-center py-2.5 text-xs font-semibold text-red-400 hover:text-red-300 bg-red-500/10 border border-red-500/20 rounded-xl transition-all">
+                    Log Out
+                </button>
+            </div>
         </div>
     </nav>
 
-    <!-- HERO SECTION -->
-    <section class="relative py-20 lg:py-28 overflow-hidden hero-gradient border-b border-slate-800/60">
+    <!-- HERO SECTION (Single clean section tag) -->
+    <section id="heroSection" class="relative py-20 lg:py-28 overflow-hidden hero-gradient border-b border-slate-800/60">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
                 
@@ -198,6 +228,42 @@
                     </div>
                 </div>
 
+            </div>
+        </div>
+    </section>
+
+    <!-- LOGGED-IN STUDENT DASHBOARD BANNER (Hidden until login) -->
+    <section id="studentDashboard" class="hidden bg-slate-900/70 border-b border-slate-800 py-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-gradient-to-r from-brand-900/40 via-slate-900 to-slate-900 border border-brand-500/30 rounded-3xl p-6 sm:p-8">
+                <div class="space-y-2">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-xs font-semibold text-emerald-400">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                        Student Profile Active
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                        Welcome back, <span id="dashboardUserName" class="text-brand-400">Student</span>!
+                    </h1>
+                    <p id="dashboardUserEmail" class="text-slate-400 text-sm">
+                        Your class-conflict filter and live shift feed are active.
+                    </p>
+                </div>
+
+                <!-- Quick Student Stats -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 text-center">
+                        <p id="dashFreeHours" class="text-xl font-black text-emerald-400">20 hrs</p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">Free / Week</p>
+                    </div>
+                    <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 text-center">
+                        <p id="dashAppliedCount" class="text-xl font-black text-white">0</p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">Shifts Applied</p>
+                    </div>
+                    <div class="col-span-2 sm:col-span-1 bg-slate-950/80 border border-slate-800 rounded-2xl p-4 text-center">
+                        <p class="text-xl font-black text-brand-400">Verified</p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">Campus Status</p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -452,143 +518,218 @@
 
     <!-- JAVASCRIPT CONTROLS -->
     <script>
-       const API_BASE = 'https://campus-gig-z7ps.onrender.com/api';
-const socket = io('https://campus-gig-z7ps.onrender.com');
-	
-// Listen for instant WebSocket updates
-socket.on('job_updated', (data) => {
-    console.log('Shift updated live:', data);
-    const currentRadius = document.getElementById('radiusRange').value;
-    filterJobsByRadius(currentRadius);
-});
+        const API_BASE = 'https://campus-gig-z7ps.onrender.com/api';
+        const socket = io('https://campus-gig-z7ps.onrender.com');
 
-let currentAuthMode = 'login';
-let totalFreeHours = 20;
-
-// Auth Modal Controls
-function openAuthModal(mode) {
-    currentAuthMode = mode;
-    const modal = document.getElementById('authModal');
-    const title = document.getElementById('modalTitle');
-    const subtitle = document.getElementById('modalSubtitle');
-    const submitBtn = document.getElementById('modalSubmitBtn');
-    const nameField = document.getElementById('nameField');
-    const toggleText = document.getElementById('modalToggleText');
-    const toggleBtn = document.getElementById('modalToggleBtn');
-
-    if (mode === 'signup') {
-        title.innerText = 'Create your Account';
-        subtitle.innerText = 'Start matching part-time jobs around your classes.';
-        submitBtn.innerText = 'Create Account';
-        nameField.classList.remove('hidden');
-        toggleText.innerText = 'Already have an account?';
-        toggleBtn.innerText = 'Log In';
-    } else {
-        title.innerText = 'Log In to Campus Gig';
-        subtitle.innerText = 'Enter your credentials to access your job feed.';
-        submitBtn.innerText = 'Log In';
-        nameField.classList.add('hidden');
-        toggleText.innerText = "Don't have an account?";
-        toggleBtn.innerText = 'Sign Up';
-    }
-
-    modal.classList.remove('hidden');
-}
-
-function closeAuthModal() {
-    document.getElementById('authModal').classList.add('hidden');
-}
-
-function toggleAuthMode() {
-    openAuthModal(currentAuthMode === 'login' ? 'signup' : 'login');
-}
-
-// Real HTTP Auth Request to Express Backend
-async function handleAuthSubmit(e) {
-    e.preventDefault();
-    const email = e.target.querySelector('input[type="email"]').value;
-    const password = e.target.querySelector('input[type="password"]').value;
-    const name = e.target.querySelector('input[type="text"]')?.value;
-
-    const endpoint = currentAuthMode === 'signup' ? `${API_BASE}/auth/register` : `${API_BASE}/auth/login`;
-    const payload = currentAuthMode === 'signup' ? { name, email, password } : { email, password };
-
-    try {
-        const response = await fetch(endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+        // Listen for instant WebSocket updates
+        socket.on('job_updated', (data) => {
+            console.log('Shift updated live:', data);
+            const currentRadius = document.getElementById('radiusRange').value;
+            filterJobsByRadius(currentRadius);
         });
-        const data = await response.json();
 
-        if (response.ok) {
-            localStorage.setItem('token', data.token);
-            alert(currentAuthMode === 'login' ? 'Logged in successfully!' : 'Account created successfully!');
-            closeAuthModal();
-        } else {
-            alert(data.message || 'Authentication failed');
-        }
-    } catch (err) {
-        alert('Could not connect to backend server');
-    }
-}
+        let currentAuthMode = 'login';
+        let totalFreeHours = 20;
 
-// Mobile Menu Toggle
-function toggleMobileMenu() {
-    const menu = document.getElementById('mobileMenu');
-    menu.classList.toggle('hidden');
-}
+        // Auth Modal Controls
+        function openAuthModal(mode) {
+            currentAuthMode = mode;
+            const modal = document.getElementById('authModal');
+            const title = document.getElementById('modalTitle');
+            const subtitle = document.getElementById('modalSubtitle');
+            const submitBtn = document.getElementById('modalSubmitBtn');
+            const nameField = document.getElementById('nameField');
+            const toggleText = document.getElementById('modalToggleText');
+            const toggleBtn = document.getElementById('modalToggleBtn');
 
-// Real API Fetch Job Radius Filtering
-async function filterJobsByRadius(val) {
-    document.getElementById('radiusVal').innerText = val + ' km';
-
-    try {
-        const response = await fetch(`${API_BASE}/jobs?radius=${val}`);
-        const jobs = await response.json();
-
-        const cards = document.querySelectorAll('.job-card');
-        let visibleCount = 0;
-
-        cards.forEach(card => {
-            const cardDistance = parseFloat(card.getAttribute('data-distance'));
-            if (cardDistance <= parseFloat(val)) {
-                card.style.display = 'flex';
-                visibleCount++;
+            if (mode === 'signup') {
+                title.innerText = 'Create your Account';
+                subtitle.innerText = 'Start matching part-time jobs around your classes.';
+                submitBtn.innerText = 'Create Account';
+                nameField.classList.remove('hidden');
+                toggleText.innerText = 'Already have an account?';
+                toggleBtn.innerText = 'Log In';
             } else {
-                card.style.display = 'none';
+                title.innerText = 'Log In to Campus Gig';
+                subtitle.innerText = 'Enter your credentials to access your job feed.';
+                submitBtn.innerText = 'Log In';
+                nameField.classList.add('hidden');
+                toggleText.innerText = "Don't have an account?";
+                toggleBtn.innerText = 'Sign Up';
             }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.add('hidden');
+        }
+
+        function toggleAuthMode() {
+            openAuthModal(currentAuthMode === 'login' ? 'signup' : 'login');
+        }
+
+        // Real HTTP Auth Request to Express Backend
+        async function handleAuthSubmit(e) {
+            e.preventDefault();
+            const email = e.target.querySelector('input[type="email"]').value;
+            const password = e.target.querySelector('input[type="password"]').value;
+            const name = e.target.querySelector('input[type="text"]')?.value;
+
+            const endpoint = currentAuthMode === 'signup' ? `${API_BASE}/auth/register` : `${API_BASE}/auth/login`;
+            const payload = currentAuthMode === 'signup' ? { name, email, password } : { email, password };
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+
+                    const userData = data.user || { name: name || email.split('@')[0], email };
+                    if (!userData.email) userData.email = email;
+                    localStorage.setItem('user', JSON.stringify(userData));
+                    localStorage.setItem('userName', userData.name || email.split('@')[0]);
+
+                    updateAuthUI();
+                    closeAuthModal();
+                } else {
+                    alert(data.message || 'Authentication failed');
+                }
+            } catch (err) {
+                alert('Could not connect to backend server');
+            }
+        }
+
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Real API Fetch Job Radius Filtering
+        async function filterJobsByRadius(val) {
+            document.getElementById('radiusVal').innerText = val + ' km';
+
+            try {
+                const response = await fetch(`${API_BASE}/jobs?radius=${val}`);
+                const jobs = await response.json();
+
+                const cards = document.querySelectorAll('.job-card');
+                let visibleCount = 0;
+
+                cards.forEach(card => {
+                    const cardDistance = parseFloat(card.getAttribute('data-distance'));
+                    if (cardDistance <= parseFloat(val)) {
+                        card.style.display = 'flex';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                const noJobsMsg = document.getElementById('noJobsMsg');
+                if (visibleCount === 0 && jobs.length === 0) {
+                    noJobsMsg.classList.remove('hidden');
+                } else {
+                    noJobsMsg.classList.add('hidden');
+                }
+            } catch (err) {
+                console.log('Filtering locally fallback...');
+            }
+        }
+
+        // Schedule Slot Toggle & Hours Calculation
+        function toggleSlot(btn, hours) {
+            const isFree = btn.getAttribute('data-free') === 'true';
+
+            if (isFree) {
+                btn.innerText = 'Class (Blocked)';
+                btn.className = 'slot-btn py-3 bg-red-500/10 text-red-400 border border-red-500/30 rounded-xl transition-all';
+                btn.setAttribute('data-free', 'false');
+                totalFreeHours = Math.max(0, totalFreeHours - hours);
+            } else {
+                btn.innerText = 'Free Slot';
+                btn.className = 'slot-btn py-3 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-xl transition-all';
+                btn.setAttribute('data-free', 'true');
+                totalFreeHours += hours;
+            }
+
+            document.getElementById('freeHoursCount').innerText = totalFreeHours;
+            if (document.getElementById('dashFreeHours')) {
+                document.getElementById('dashFreeHours').innerText = `${totalFreeHours} hrs`;
+            }
+        }
+
+        // Run immediately when page loads to check if user is already logged in
+        document.addEventListener('DOMContentLoaded', () => {
+            updateAuthUI();
         });
 
-        const noJobsMsg = document.getElementById('noJobsMsg');
-        if (visibleCount === 0 && jobs.length === 0) {
-            noJobsMsg.classList.remove('hidden');
-        } else {
-            noJobsMsg.classList.add('hidden');
+        function updateAuthUI() {
+            const token = localStorage.getItem('token');
+            const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
+            const userName = storedUser?.name || localStorage.getItem('userName') || 'Student';
+            const userEmail = storedUser?.email || '';
+            const initial = userName.charAt(0).toUpperCase();
+
+            const heroSection = document.getElementById('heroSection');
+            const studentDashboard = document.getElementById('studentDashboard');
+            const guestNav = document.getElementById('guestNavActions');
+            const userNav = document.getElementById('userNavActions');
+            const mobileGuest = document.getElementById('mobileGuestActions');
+            const mobileUser = document.getElementById('mobileUserActions');
+
+            if (token) {
+                if (heroSection) heroSection.classList.add('hidden');
+                if (studentDashboard) studentDashboard.classList.remove('hidden');
+
+                if (guestNav) {
+                    guestNav.classList.add('hidden');
+                    guestNav.classList.remove('sm:flex');
+                }
+                if (userNav) {
+                    userNav.classList.remove('hidden');
+                    userNav.classList.add('flex');
+                }
+                if (mobileGuest) mobileGuest.classList.add('hidden');
+                if (mobileUser) mobileUser.classList.remove('hidden');
+
+                if (document.getElementById('navUserName')) document.getElementById('navUserName').innerText = userName;
+                if (document.getElementById('navUserAvatar')) document.getElementById('navUserAvatar').innerText = initial;
+                if (document.getElementById('dashboardUserName')) document.getElementById('dashboardUserName').innerText = userName;
+                if (document.getElementById('dashboardUserEmail') && userEmail) {
+                    document.getElementById('dashboardUserEmail').innerText = `${userEmail} • Matched shifts ready around your timetable`;
+                }
+                if (document.getElementById('mobileUserNameDisplay')) document.getElementById('mobileUserNameDisplay').innerText = userName;
+                if (document.getElementById('mobileUserAvatarInitial')) document.getElementById('mobileUserAvatarInitial').innerText = initial;
+            } else {
+                if (heroSection) heroSection.classList.remove('hidden');
+                if (studentDashboard) studentDashboard.classList.add('hidden');
+
+                if (guestNav) {
+                    guestNav.classList.remove('hidden');
+                    guestNav.classList.add('sm:flex');
+                }
+                if (userNav) {
+                    userNav.classList.remove('flex');
+                    userNav.classList.add('hidden');
+                }
+                if (mobileGuest) mobileGuest.classList.remove('hidden');
+                if (mobileUser) mobileUser.classList.add('hidden');
+            }
         }
-    } catch (err) {
-        console.log('Filtering locally fallback...');
-    }
-}
 
-// Schedule Slot Toggle & Hours Calculation
-function toggleSlot(btn, hours) {
-    const isFree = btn.getAttribute('data-free') === 'true';
-
-    if (isFree) {
-        btn.innerText = 'Class (Blocked)';
-        btn.className = 'slot-btn py-3 bg-red-500/10 text-red-400 border border-red-500/30 rounded-xl transition-all';
-        btn.setAttribute('data-free', 'false');
-        totalFreeHours = Math.max(0, totalFreeHours - hours);
-    } else {
-        btn.innerText = 'Free Slot';
-        btn.className = 'slot-btn py-3 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-xl transition-all';
-        btn.setAttribute('data-free', 'true');
-        totalFreeHours += hours;
-    }
-
-    document.getElementById('freeHoursCount').innerText = totalFreeHours;
-}
+        function logoutUser() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            localStorage.removeItem('userName');
+            updateAuthUI();
+        }
     </script>
 </body>
 </html>
