@@ -1,735 +1,1731 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Campus Gig — Smart Part-Time Job Connect</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#eef2ff',
-                            100: '#e0e7ff',
-                            400: '#818cf8',
-                            500: '#6366f1',
-                            600: '#4f46e5',
-                            700: '#4338ca',
-                            900: '#312e81',
-                        }
-                    }
-                }
-            }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Campus Gig — Smart Job Connect</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+          },
+          boxShadow: {
+            glow: '0 8px 25px -5px rgba(249, 115, 22, 0.35)',
+            card: '0 1px 3px rgba(15, 23, 42, 0.05), 0 10px 24px -12px rgba(15, 23, 42, 0.08)',
+          }
         }
-    </script>
-    <style>
-        .gradient-logo {
-            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-        }
-        .hero-gradient {
-            background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.15), transparent 40%),
-                        radial-gradient(circle at bottom left, rgba(168, 85, 247, 0.1), transparent 40%);
-        }
-    </style>
-    <!-- Socket.io Client Library -->
-    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+      }
+    };
+  </script>
+  <style>
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-toast {
+      animation: fadeSlideUp 0.25s ease-out forwards;
+    }
+    .animate-view {
+      animation: fadeSlideUp 0.22s ease-out forwards;
+    }
+    @keyframes logoFloat {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      50% { transform: translate(-50%, -51.5%) scale(1.015); }
+    }
+    .bg-logo-watermark {
+      animation: logoFloat 9s ease-in-out infinite;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .pb-safe {
+      padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+    }
+    button, a, input, select, textarea {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+  </style>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col selection:bg-brand-500 selection:text-white">
+<body class="bg-[#F8FAFC] text-slate-800 antialiased min-h-screen flex flex-col overflow-x-hidden selection:bg-orange-100 selection:text-orange-950">
 
-    <!-- TOP NAVIGATION BAR -->
-    <nav class="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-md border-b border-slate-800/80">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            
-            <!-- Logo & Brand -->
-            <a href="#" class="flex items-center gap-3 group">
-                <div class="w-10 h-10 gradient-logo rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-brand-500/20 group-hover:scale-105 transition-transform">
-                    CG
-                </div>
-                <div class="flex flex-col">
-                    <span class="font-extrabold text-lg text-white tracking-tight leading-none">Campus Gig</span>
-                    <span class="text-[10px] text-brand-400 font-semibold tracking-widest uppercase">Smart Job Connect</span>
-                </div>
-            </a>
+  <!-- ==================== GLOBAL SVG GRADIENT DEFINITIONS (NEVER HIDDEN) ==================== -->
+  <svg width="0" height="0" class="fixed pointer-events-none" aria-hidden="true">
+    <defs>
+      <linearGradient id="cgBrandSky" x1="80" y1="30" x2="240" y2="270" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#38BDF8" />
+        <stop offset="55%" stop-color="#0284C7" />
+        <stop offset="100%" stop-color="#1E3A8A" />
+      </linearGradient>
+      <linearGradient id="cgBrandNavy" x1="160" y1="30" x2="160" y2="290" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#1E3A8A" />
+        <stop offset="100%" stop-color="#0F172A" />
+      </linearGradient>
+      <linearGradient id="cgGlobalSkyGrad" x1="110" y1="60" x2="290" y2="280" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#38BDF8" />
+        <stop offset="50%" stop-color="#0284C7" />
+        <stop offset="100%" stop-color="#1E3A8A" />
+      </linearGradient>
+      <linearGradient id="cgGlobalNavyGrad" x1="200" y1="60" x2="200" y2="290" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#1E3A8A" />
+        <stop offset="100%" stop-color="#0F172A" />
+      </linearGradient>
+    </defs>
+  </svg>
 
-            <!-- Desktop Nav Links -->
-            <div class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-400">
-                <a href="#feed" class="hover:text-white transition-colors">Explore Jobs</a>
-                <a href="#schedule" class="hover:text-white transition-colors">Schedule Builder</a>
-                <a href="#employers" class="hover:text-white transition-colors">For Employers</a>
+  <!-- ==================== GLOBAL PERSISTENT BRAND WATERMARK ==================== -->
+  <div aria-hidden="true" class="pointer-events-none fixed inset-0 overflow-hidden flex items-center justify-center z-0">
+    <svg class="bg-logo-watermark absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[310px] h-[310px] sm:w-[600px] sm:h-[600px] lg:w-[820px] lg:h-[820px] opacity-[0.11]" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M200 54L126 84L200 112L274 84L200 54Z" fill="url(#cgGlobalSkyGrad)" />
+      <path d="M200 54L274 84L200 112V54Z" fill="url(#cgGlobalNavyGrad)" />
+      <path d="M156 101V121L200 105L244 121V101L200 118L156 101Z" fill="url(#cgGlobalSkyGrad)" />
+      <path d="M200 116L160 133V146C136 162 122 189 124 219C126 254 152 287 200 326C248 287 274 254 276 219C278 189 264 162 240 146V133L200 116ZM200 288C163 262 145 236 144 210C143 181 167 156 200 156C233 156 257 181 256 210C255 236 237 262 200 288Z" fill="url(#cgGlobalSkyGrad)" />
+      <path d="M200 116L240 133V146C264 162 278 189 276 219C274 254 248 287 200 326V288C237 262 255 236 256 210C257 181 233 156 200 156V116Z" fill="url(#cgGlobalNavyGrad)" />
+      <g transform="rotate(-11 200 216)">
+        <path d="M183 182V174C183 169.5 186.5 166 191 166H209C213.5 166 217 169.5 217 174V182" stroke="url(#cgGlobalSkyGrad)" stroke-width="8" stroke-linecap="round" />
+        <rect x="155" y="182" width="90" height="62" rx="13" fill="url(#cgGlobalSkyGrad)" />
+        <path d="M155 203C173 213 227 213 245 203" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round" />
+        <rect x="192" y="201" width="16" height="18" rx="4.5" fill="#FFFFFF" />
+        <rect x="196.5" y="205.5" width="7" height="9" rx="2" fill="url(#cgGlobalNavyGrad)" />
+      </g>
+      <text x="200" y="372" text-anchor="middle" font-family="'Plus Jakarta Sans', 'Inter', sans-serif" font-weight="800" font-size="44" letter-spacing="-1.5">
+        <tspan fill="#0F172A">campus</tspan><tspan fill="#0284C7">gig</tspan>
+      </text>
+    </svg>
+  </div>
+
+  <!-- ==================== DEDICATED FULL-SCREEN AUTH LANDING PAGE ==================== -->
+  <section id="auth-landing-screen" class="relative z-10 min-h-screen w-full overflow-x-hidden bg-gradient-to-b from-white/85 via-[#F8FAFC]/80 to-slate-100/75 flex flex-col justify-between">
+    <header class="relative z-10 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2.5 sm:gap-3">
+        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex items-center justify-center p-1 shrink-0">
+          <svg class="w-8 h-8 sm:w-10 sm:h-10" viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M160 22L82 54L160 84L238 54L160 22Z" fill="url(#cgBrandSky)" />
+            <path d="M160 22L238 54L160 84V22Z" fill="url(#cgBrandNavy)" />
+            <path d="M114 72V93L160 76L206 93V72L160 90L114 72Z" fill="url(#cgBrandSky)" />
+            <path d="M160 88L118 106V120C93 137 78 166 80 198C82 235 110 270 160 310C210 270 238 235 240 198C242 166 227 137 202 120V106L160 88ZM160 270C121 242 102 215 101 188C100 157 125 130 160 130C195 130 220 157 219 188C218 215 199 242 160 270Z" fill="url(#cgBrandSky)" />
+            <path d="M160 88L202 106V120C227 137 242 166 240 198C238 235 210 270 160 310V270C199 242 218 215 219 188C220 157 195 130 160 130V88Z" fill="url(#cgBrandNavy)" />
+            <g transform="rotate(-11 160 194)">
+              <path d="M142 158V149C142 144 146 140 151 140H169C174 140 178 144 178 149V158" stroke="url(#cgBrandSky)" stroke-width="9" stroke-linecap="round" />
+              <rect x="112" y="158" width="96" height="66" rx="14" fill="url(#cgBrandSky)" />
+              <path d="M112 180C131 191 189 191 208 180" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" />
+              <rect x="151" y="178" width="18" height="20" rx="5" fill="#FFFFFF" />
+              <rect x="156" y="183" width="8" height="10" rx="2.5" fill="url(#cgBrandNavy)" />
+            </g>
+          </svg>
+        </div>
+        <div>
+          <span class="font-display font-extrabold text-lg sm:text-xl tracking-tight block leading-none">
+            <span class="text-slate-900">campus</span><span class="text-sky-600">gig</span>
+          </span>
+          <span class="text-[10px] sm:text-[11px] font-semibold text-slate-500 tracking-wide block mt-0.5">SMART JOB CONNECT • PUNE</span>
+        </div>
+      </div>
+
+      <button type="button" onclick="quickDemoLogin()" class="px-3.5 py-2 sm:px-4 sm:py-2 rounded-full bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-bold text-xs sm:text-sm shadow-sm hover:shadow-glow transition-all shrink-0">
+        Instant Demo →
+      </button>
+    </header>
+
+    <div class="relative z-10 flex-1 flex items-center justify-center px-4 sm:px-6 py-4 sm:py-6">
+      <div class="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
+        <div class="lg:col-span-6 order-2 lg:order-1 space-y-4 sm:space-y-5 text-center lg:text-left">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-slate-200 shadow-2xs text-[11px] sm:text-xs font-bold text-slate-800">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            Dual Interface: Students &amp; Store Employers
+          </div>
+          <h1 class="font-display font-extrabold text-2xl sm:text-4xl lg:text-5xl text-slate-950 tracking-tight leading-[1.15]">
+            Part-time shifts that fit <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-blue-900">around your lectures.</span>
+          </h1>
+          <p class="text-slate-600 text-xs sm:text-base max-w-xl mx-auto lg:mx-0 leading-relaxed">
+            Sync your weekly college timetable, discover GSTIN-verified retail &amp; cafe shifts within walking distance, or sign in as an employer to manage applicant chat, send KYC forms, and post shifts.
+          </p>
+
+          <div class="grid grid-cols-3 gap-2.5 sm:gap-3 max-w-md mx-auto lg:mx-0 pt-1">
+            <div class="bg-white/95 rounded-2xl border border-slate-200/80 p-3 sm:p-3.5 shadow-card">
+              <div class="font-display font-extrabold text-base sm:text-xl text-emerald-600">0%</div>
+              <div class="text-[10px] sm:text-[11px] font-semibold text-slate-500">Class Overlap</div>
             </div>
-
-            <!-- Auth Buttons & Mobile Menu Toggle -->
-            <div class="flex items-center gap-3">
-                <!-- Logged Out State -->
-                <div id="guestNavActions" class="hidden sm:flex items-center gap-3">
-                    <button onclick="openAuthModal('login')" class="text-sm font-semibold text-slate-300 hover:text-white px-3 py-2 transition-colors">
-                        Log In
-                    </button>
-                    <button onclick="openAuthModal('signup')" class="bg-brand-600 hover:bg-brand-500 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-lg shadow-brand-600/30 hover:shadow-brand-500/50 transition-all">
-                        Sign Up
-                    </button>
-                </div>
-
-                <!-- Logged In User State (Hidden by default) -->
-                <div id="userNavActions" class="hidden items-center gap-3">
-                    <div class="flex items-center gap-2.5 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl">
-                        <div id="navUserAvatar" class="w-7 h-7 gradient-logo rounded-lg flex items-center justify-center text-white font-bold text-xs">
-                            U
-                        </div>
-                        <span id="navUserName" class="text-sm font-semibold text-white">User</span>
-                    </div>
-                    <button onclick="logoutUser()" class="text-xs font-semibold text-slate-400 hover:text-red-400 px-2.5 py-2 rounded-lg hover:bg-slate-900 transition-colors">
-                        Log Out
-                    </button>
-                </div>
-
-                <!-- Hamburger Button (Mobile) -->
-                <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 focus:outline-none">
-                    <svg id="menuIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                </button>
+            <div class="bg-white/95 rounded-2xl border border-slate-200/80 p-3 sm:p-3.5 shadow-card">
+              <div class="font-display font-extrabold text-base sm:text-xl text-slate-900">100%</div>
+              <div class="text-[10px] sm:text-[11px] font-semibold text-slate-500">GSTIN Verified</div>
             </div>
+            <div class="bg-white/95 rounded-2xl border border-slate-200/80 p-3 sm:p-3.5 shadow-card">
+              <div class="font-display font-extrabold text-base sm:text-xl text-emerald-600">₹185/hr</div>
+              <div class="text-[10px] sm:text-[11px] font-semibold text-slate-500">Avg. Pune Pay</div>
+            </div>
+          </div>
         </div>
 
-        <!-- Mobile Navigation Menu Dropdown (Single Unified Menu) -->
-        <div id="mobileMenu" class="hidden md:hidden bg-slate-950/95 border-b border-slate-800 px-4 pt-2 pb-6 space-y-4">
-            <a href="#feed" onclick="toggleMobileMenu()" class="block text-slate-300 hover:text-white font-medium py-2">Explore Jobs</a>
-            <a href="#schedule" onclick="toggleMobileMenu()" class="block text-slate-300 hover:text-white font-medium py-2">Schedule Builder</a>
-            <a href="#employers" onclick="toggleMobileMenu()" class="block text-slate-300 hover:text-white font-medium py-2">For Employers</a>
-            
-            <!-- Mobile Logged Out State -->
-            <div id="mobileGuestActions" class="pt-2 border-t border-slate-800 flex flex-col gap-2">
-                <button onclick="toggleMobileMenu(); openAuthModal('login')" class="w-full text-center py-2.5 text-sm font-semibold text-slate-300 border border-slate-800 rounded-xl">
-                    Log In
-                </button>
-                <button onclick="toggleMobileMenu(); openAuthModal('signup')" class="w-full text-center py-2.5 text-sm font-semibold text-white bg-brand-600 rounded-xl">
-                    Sign Up
-                </button>
+        <div class="lg:col-span-6 order-1 lg:order-2">
+          <div class="bg-white/95 backdrop-blur-xs rounded-3xl border border-slate-200/90 shadow-xl p-5 sm:p-8 max-w-md mx-auto space-y-4 sm:space-y-5">
+            <div class="flex flex-col items-center text-center pb-0.5">
+              <svg class="w-14 h-14 sm:w-16 sm:h-16 mb-1 drop-shadow-xs" viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M160 22L82 54L160 84L238 54L160 22Z" fill="url(#cgBrandSky)" />
+                <path d="M160 22L238 54L160 84V22Z" fill="url(#cgBrandNavy)" />
+                <path d="M114 72V93L160 76L206 93V72L160 90L114 72Z" fill="url(#cgBrandSky)" />
+                <path d="M160 88L118 106V120C93 137 78 166 80 198C82 235 110 270 160 310C210 270 238 235 240 198C242 166 227 137 202 120V106L160 88ZM160 270C121 242 102 215 101 188C100 157 125 130 160 130C195 130 220 157 219 188C218 215 199 242 160 270Z" fill="url(#cgBrandSky)" />
+                <path d="M160 88L202 106V120C227 137 242 166 240 198C238 235 210 270 160 310V270C199 242 218 215 219 188C220 157 195 130 160 130V88Z" fill="url(#cgBrandNavy)" />
+                <g transform="rotate(-11 160 194)">
+                  <path d="M142 158V149C142 144 146 140 151 140H169C174 140 178 144 178 149V158" stroke="url(#cgBrandSky)" stroke-width="9" stroke-linecap="round" />
+                  <rect x="112" y="158" width="96" height="66" rx="14" fill="url(#cgBrandSky)" />
+                  <path d="M112 180C131 191 189 191 208 180" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" />
+                  <rect x="151" y="178" width="18" height="20" rx="5" fill="#FFFFFF" />
+                  <rect x="156" y="183" width="8" height="10" rx="2.5" fill="url(#cgBrandNavy)" />
+                </g>
+              </svg>
+              <div class="font-display font-extrabold text-xl sm:text-2xl tracking-tight leading-none">
+                <span class="text-slate-900">campus</span><span class="text-sky-600">gig</span>
+              </div>
+              <p class="text-[11px] font-medium text-slate-500 mt-1">Sign in as Student or Employer to access your workspace</p>
             </div>
 
-            <!-- Mobile Logged In State (Hidden by default) -->
-            <div id="mobileUserActions" class="hidden pt-2 border-t border-slate-800 flex flex-col gap-3">
-                <div class="flex items-center gap-3 px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl">
-                    <div class="w-8 h-8 rounded-lg gradient-logo text-white flex items-center justify-center font-bold text-sm" id="mobileUserAvatarInitial">U</div>
-                    <div class="flex flex-col">
-                        <span id="mobileUserNameDisplay" class="text-xs font-bold text-white">Account</span>
-                        <span class="text-[10px] text-slate-400">Logged In</span>
-                    </div>
-                </div>
-                <button onclick="toggleMobileMenu(); logoutUser()" class="w-full text-center py-2.5 text-xs font-semibold text-red-400 hover:text-red-300 bg-red-500/10 border border-red-500/20 rounded-xl transition-all">
-                    Log Out
-                </button>
+            <div class="grid grid-cols-2 gap-1.5 p-1.5 rounded-2xl bg-slate-100 border border-slate-200/70">
+              <button type="button" id="tab-login-btn" onclick="setAuthMode('login')" class="py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-white text-slate-900 shadow-xs transition-all">
+                Log In
+              </button>
+              <button type="button" id="tab-signup-btn" onclick="setAuthMode('signup')" class="py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-500 hover:text-slate-900 transition-all">
+                Sign Up
+              </button>
             </div>
-        </div>
-    </nav>
 
-    <!-- HERO SECTION (Single clean section tag) -->
-    <section id="heroSection" class="relative py-20 lg:py-28 overflow-hidden hero-gradient border-b border-slate-800/60">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                
-                <!-- Hero Left Content -->
-                <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
-                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-xs font-medium text-brand-300">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                        Live in Pune • Verified Campus Employers Only
-                    </div>
-                    
-                    <h1 class="text-4xl sm:text-6xl font-black text-white tracking-tight leading-[1.1]">
-                        Earn around your classes. <br>
-                        <span class="bg-gradient-to-r from-brand-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                            Zero timetable conflicts.
-                        </span>
-                    </h1>
-
-                    <p class="text-slate-400 text-base sm:text-lg max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-                        Campus Gig matches your college free hours and hostel location with nearby shift openings at verified local stores.
-                    </p>
-
-                    <!-- Hero Search Input Bar -->
-                    <div class="pt-2 max-w-xl mx-auto lg:mx-0">
-                        <div class="p-2 bg-slate-900/90 border border-slate-800 rounded-2xl flex flex-col sm:flex-row gap-2 shadow-2xl">
-                            <input type="text" placeholder="Enter campus or location (e.g. MIT ADT, Hadapsar)..." class="bg-transparent px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none flex-grow">
-                            <button onclick="document.getElementById('feed').scrollIntoView()" class="bg-brand-600 hover:bg-brand-500 text-white text-sm font-bold px-6 py-3 rounded-xl transition-all shadow-lg shadow-brand-600/30">
-                                Find Shifts
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Quick Stats -->
-                    <div class="pt-6 grid grid-cols-3 gap-4 max-w-md mx-auto lg:mx-0 border-t border-slate-800/80 text-center lg:text-left">
-                        <div>
-                            <p class="text-2xl font-extrabold text-white">100%</p>
-                            <p class="text-xs text-slate-500 font-medium">Class Conflict Free</p>
-                        </div>
-                        <div>
-                            <p class="text-2xl font-extrabold text-white">GSTIN</p>
-                            <p class="text-xs text-slate-500 font-medium">Verified Stores</p>
-                        </div>
-                        <div>
-                            <p class="text-2xl font-extrabold text-white">1-Click</p>
-                            <p class="text-xs text-slate-500 font-medium">Fast Applications</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Hero Right Preview Card -->
-                <div class="lg:col-span-5">
-                    <div class="relative mx-auto max-w-sm sm:max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl shadow-brand-900/20">
-                        <div class="flex items-center justify-between pb-4 border-b border-slate-800">
-                            <div class="flex items-center gap-3">
-                                <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
-                                <div class="w-3 h-3 rounded-full bg-amber-500/80"></div>
-                                <div class="w-3 h-3 rounded-full bg-emerald-500/80"></div>
-                            </div>
-                            <span class="text-xs font-mono text-slate-500">Live 4D Match Feed</span>
-                        </div>
-
-                        <!-- Card Item 1 -->
-                        <div class="mt-4 p-4 rounded-2xl bg-slate-800/50 border border-slate-700/50 space-y-3">
-                            <div class="flex items-start justify-between">
-                                <div>
-                                    <h4 class="font-bold text-white text-sm">Decathlon — Floor Associate</h4>
-                                    <p class="text-xs text-slate-400">Amanora Mall (2.1 km away)</p>
-                                </div>
-                                <span class="px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold rounded-lg">
-                                    94% Match
-                                </span>
-                            </div>
-                            <div class="flex items-center justify-between text-xs text-slate-300">
-                                <span>🕒 4:30 PM - 8:30 PM</span>
-                                <span class="font-bold text-white">₹180 / hr</span>
-                            </div>
-                            <button onclick="openAuthModal('signup')" class="w-full py-2 bg-brand-600/20 hover:bg-brand-600 border border-brand-500/40 text-brand-300 hover:text-white text-xs font-bold rounded-xl transition-all">
-                                Quick Apply
-                            </button>
-                        </div>
-
-                        <!-- Card Item 2 -->
-                        <div class="mt-3 p-4 rounded-2xl bg-slate-800/30 border border-slate-800 space-y-3">
-                            <div class="flex items-start justify-between">
-                                <div>
-                                    <h4 class="font-bold text-white text-sm">Zudio — Cashier & Inventory</h4>
-                                    <p class="text-xs text-slate-400">Hadapsar (1.2 km away)</p>
-                                </div>
-                                <span class="px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold rounded-lg">
-                                    89% Match
-                                </span>
-                            </div>
-                            <div class="flex items-center justify-between text-xs text-slate-300">
-                                <span>🕒 5:00 PM - 9:00 PM</span>
-                                <span class="font-bold text-white">₹160 / hr</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- LOGGED-IN STUDENT DASHBOARD BANNER (Hidden until login) -->
-    <section id="studentDashboard" class="hidden bg-slate-900/70 border-b border-slate-800 py-10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-gradient-to-r from-brand-900/40 via-slate-900 to-slate-900 border border-brand-500/30 rounded-3xl p-6 sm:p-8">
-                <div class="space-y-2">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-xs font-semibold text-emerald-400">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                        Student Profile Active
-                    </div>
-                    <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-                        Welcome back, <span id="dashboardUserName" class="text-brand-400">Student</span>!
-                    </h1>
-                    <p id="dashboardUserEmail" class="text-slate-400 text-sm">
-                        Your class-conflict filter and live shift feed are active.
-                    </p>
-                </div>
-
-                <!-- Quick Student Stats -->
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                    <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 text-center">
-                        <p id="dashFreeHours" class="text-xl font-black text-emerald-400">20 hrs</p>
-                        <p class="text-[11px] text-slate-400 mt-0.5">Free / Week</p>
-                    </div>
-                    <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 text-center">
-                        <p id="dashAppliedCount" class="text-xl font-black text-white">0</p>
-                        <p class="text-[11px] text-slate-400 mt-0.5">Shifts Applied</p>
-                    </div>
-                    <div class="col-span-2 sm:col-span-1 bg-slate-950/80 border border-slate-800 rounded-2xl p-4 text-center">
-                        <p class="text-xl font-black text-brand-400">Verified</p>
-                        <p class="text-[11px] text-slate-400 mt-0.5">Campus Status</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- MAIN APP INTERFACE: EXPLORE JOBS & RADIUS FILTER -->
-    <section id="feed" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-grow">
-        
-        <!-- Controls & Filter Bar -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-8 border-b border-slate-800">
             <div>
-                <h2 class="text-2xl font-bold text-white tracking-tight">Recommended Shift Openings</h2>
-                <p class="text-slate-400 text-sm mt-1">Filtered in real-time based on campus distance and class hours.</p>
-            </div>
-
-            <!-- Radius Filter Control -->
-            <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex items-center gap-4 min-w-[300px]">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-400 whitespace-nowrap">Distance Radius:</span>
-                <input id="radiusRange" type="range" min="1" max="5" value="3" class="w-full accent-brand-500 bg-slate-800 h-2 rounded-lg cursor-pointer" oninput="filterJobsByRadius(this.value)">
-                <span id="radiusVal" class="text-sm font-extrabold text-brand-400 whitespace-nowrap">3 km</span>
-            </div>
-        </div>
-
-        <!-- Job Cards Grid -->
-        <div id="jobGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-            
-            <!-- Job Card 1 -->
-            <div class="job-card bg-slate-900 rounded-2xl p-6 border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between space-y-4" data-distance="2.1">
-                <div class="space-y-3">
-                    <div class="flex items-start justify-between">
-                        <div class="w-10 h-10 rounded-xl bg-blue-600/20 text-blue-400 flex items-center justify-center font-bold text-lg">
-                            D
-                        </div>
-                        <span class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold rounded-lg">
-                            94% Match
-                        </span>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-white text-lg">Floor Associate</h3>
-                        <p class="text-sm text-slate-400">Decathlon • Amanora Mall</p>
-                    </div>
-                    <div class="flex items-center gap-2 text-xs text-slate-300">
-                        <span class="px-2 py-1 bg-slate-800 rounded-md border border-slate-700">📍 2.1 km</span>
-                        <span class="px-2 py-1 bg-slate-800 rounded-md border border-slate-700">🕒 4:30 PM - 8:30 PM</span>
-                    </div>
-                </div>
-                <div class="pt-4 border-t border-slate-800 flex items-center justify-between">
-                    <div>
-                        <span class="text-xs text-slate-500 font-medium">Hourly Pay</span>
-                        <p class="font-extrabold text-white text-base">₹180 / hr</p>
-                    </div>
-                    <button onclick="openAuthModal('login')" class="bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all">
-                        1-Click Apply
-                    </button>
-                </div>
-            </div>
-
-            <!-- Job Card 2 -->
-            <div class="job-card bg-slate-900 rounded-2xl p-6 border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between space-y-4" data-distance="1.2">
-                <div class="space-y-3">
-                    <div class="flex items-start justify-between">
-                        <div class="w-10 h-10 rounded-xl bg-purple-600/20 text-purple-400 flex items-center justify-center font-bold text-lg">
-                            Z
-                        </div>
-                        <span class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold rounded-lg">
-                            89% Match
-                        </span>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-white text-lg">Cashier & Inventory Assistant</h3>
-                        <p class="text-sm text-slate-400">Zudio • Hadapsar</p>
-                    </div>
-                    <div class="flex items-center gap-2 text-xs text-slate-300">
-                        <span class="px-2 py-1 bg-slate-800 rounded-md border border-slate-700">📍 1.2 km</span>
-                        <span class="px-2 py-1 bg-slate-800 rounded-md border border-slate-700">🕒 5:00 PM - 9:00 PM</span>
-                    </div>
-                </div>
-                <div class="pt-4 border-t border-slate-800 flex items-center justify-between">
-                    <div>
-                        <span class="text-xs text-slate-500 font-medium">Hourly Pay</span>
-                        <p class="font-extrabold text-white text-base">₹160 / hr</p>
-                    </div>
-                    <button onclick="openAuthModal('login')" class="bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all">
-                        1-Click Apply
-                    </button>
-                </div>
-            </div>
-
-            <!-- Job Card 3 -->
-            <div class="job-card bg-slate-900 rounded-2xl p-6 border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between space-y-4" data-distance="0.8">
-                <div class="space-y-3">
-                    <div class="flex items-start justify-between">
-                        <div class="w-10 h-10 rounded-xl bg-red-600/20 text-red-400 flex items-center justify-center font-bold text-lg">
-                            M
-                        </div>
-                        <span class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold rounded-lg">
-                            85% Match
-                        </span>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-white text-lg">Evening Crew Member</h3>
-                        <p class="text-sm text-slate-400">McDonald's • Loni Kalbhor</p>
-                    </div>
-                    <div class="flex items-center gap-2 text-xs text-slate-300">
-                        <span class="px-2 py-1 bg-slate-800 rounded-md border border-slate-700">📍 0.8 km</span>
-                        <span class="px-2 py-1 bg-slate-800 rounded-md border border-slate-700">🕒 6:00 PM - 10:00 PM</span>
-                    </div>
-                </div>
-                <div class="pt-4 border-t border-slate-800 flex items-center justify-between">
-                    <div>
-                        <span class="text-xs text-slate-500 font-medium">Hourly Pay</span>
-                        <p class="font-extrabold text-white text-base">₹150 / hr</p>
-                    </div>
-                    <button onclick="openAuthModal('login')" class="bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all">
-                        1-Click Apply
-                    </button>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- No Jobs Fallback Message -->
-        <div id="noJobsMsg" class="hidden text-center py-12 border border-slate-800 rounded-2xl bg-slate-900/40 mt-8">
-            <p class="text-slate-400 text-sm">No shift openings found within the selected distance radius.</p>
-            <button onclick="document.getElementById('radiusRange').value = 5; filterJobsByRadius(5);" class="mt-3 text-xs font-bold text-brand-400 hover:underline">
-                Expand radius to 5 km
-            </button>
-        </div>
-    </section>
-
-    <!-- INTERACTIVE SCHEDULE BUILDER SECTION -->
-    <section id="schedule" class="py-16 bg-slate-900/60 border-t border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
-                <div>
-                    <h2 class="text-2xl font-bold text-white tracking-tight">Interactive Schedule Builder</h2>
-                    <p class="text-slate-400 text-sm mt-1">Click any time slot below to toggle between class hours and available shift slots.</p>
-                </div>
-                <div class="px-4 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs font-semibold text-slate-300">
-                    Total Free Availability: <span id="freeHoursCount" class="text-emerald-400 font-bold">20</span> hrs/week
-                </div>
-            </div>
-
-            <!-- Schedule Matrix Grid -->
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 overflow-x-auto shadow-2xl">
-                <div class="min-w-[600px] grid grid-cols-7 gap-3 text-center text-xs font-semibold">
-                    <div class="text-slate-500 py-2">Time Slot</div>
-                    <div class="text-slate-300 py-2">Mon</div>
-                    <div class="text-slate-300 py-2">Tue</div>
-                    <div class="text-slate-300 py-2">Wed</div>
-                    <div class="text-slate-300 py-2">Thu</div>
-                    <div class="text-slate-300 py-2">Fri</div>
-                    <div class="text-slate-300 py-2">Sat</div>
-
-                    <!-- Row 1 (4-hour slot) -->
-                    <div class="text-slate-400 font-mono py-3 flex items-center justify-center">09:00 - 13:00</div>
-                    <button onclick="toggleSlot(this, 4)" class="slot-btn py-3 bg-red-500/10 text-red-400 border border-red-500/30 rounded-xl transition-all" data-free="false">Class (Blocked)</button>
-                    <button onclick="toggleSlot(this, 4)" class="slot-btn py-3 bg-red-500/10 text-red-400 border border-red-500/30 rounded-xl transition-all" data-free="false">Class (Blocked)</button>
-                    <button onclick="toggleSlot(this, 4)" class="slot-btn py-3 bg-red-500/10 text-red-400 border border-red-500/30 rounded-xl transition-all" data-free="false">Class (Blocked)</button>
-                    <button onclick="toggleSlot(this, 4)" class="slot-btn py-3 bg-red-500/10 text-red-400 border border-red-500/30 rounded-xl transition-all" data-free="false">Class (Blocked)</button>
-                    <button onclick="toggleSlot(this, 4)" class="slot-btn py-3 bg-red-500/10 text-red-400 border border-red-500/30 rounded-xl transition-all" data-free="false">Class (Blocked)</button>
-                    <button onclick="toggleSlot(this, 4)" class="slot-btn py-3 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-xl transition-all" data-free="true">Free Slot</button>
-
-                    <!-- Row 2 (4-hour slot) -->
-                    <div class="text-slate-400 font-mono py-3 flex items-center justify-center">16:00 - 20:00</div>
-                    <button onclick="toggleSlot(this, 4)" class="slot-btn py-3 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-xl transition-all" data-free="true">Free Slot</button>
-                    <button onclick="toggleSlot(this, 4)" class="slot-btn py-3 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-xl transition-all" data-free="true">Free Slot</button>
-                    <button onclick="toggleSlot(this, 4)" class="slot-btn py-3 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-xl transition-all" data-free="true">Free Slot</button>
-                    <button onclick="toggleSlot(this, 4)" class="slot-btn py-3 bg-red-500/10 text-red-400 border border-red-500/30 rounded-xl transition-all" data-free="false">Lab (Blocked)</button>
-                    <button onclick="toggleSlot(this, 4)" class="slot-btn py-3 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-xl transition-all" data-free="true">Free Slot</button>
-                    <button onclick="toggleSlot(this, 4)" class="slot-btn py-3 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-xl transition-all" data-free="true">Free Slot</button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- EMPLOYER PARTNER CTA BANNER -->
-    <section id="employers" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div class="bg-gradient-to-r from-brand-900/60 via-slate-900 to-slate-900 border border-brand-500/30 rounded-3xl p-8 lg:p-12 flex flex-col md:flex-row items-center justify-between gap-8">
-            <div class="space-y-3 max-w-2xl text-center md:text-left">
-                <span class="px-3 py-1 bg-brand-500/20 text-brand-300 text-xs font-bold rounded-full border border-brand-500/30">
-                    For Local Store Managers & Businesses
-                </span>
-                <h3 class="text-2xl sm:text-3xl font-extrabold text-white">Hire verified campus talent for flexible store shifts</h3>
-                <p class="text-slate-400 text-sm leading-relaxed">
-                    Post shift openings, verify your business with GSTIN, and recruit reliable college students with matching free hours.
-                </p>
-            </div>
-            <button onclick="openAuthModal('signup')" class="bg-white hover:bg-slate-100 text-slate-950 font-bold px-6 py-3.5 rounded-xl shadow-xl transition-all text-sm whitespace-nowrap">
-                Register Store Dashboard
-            </button>
-        </div>
-    </section>
-
-    <!-- FOOTER -->
-    <footer class="bg-slate-950 border-t border-slate-900 py-10 text-slate-500 text-xs">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-2">
-                <div class="w-6 h-6 gradient-logo rounded-md flex items-center justify-center text-white font-black text-xs">CG</div>
-                <span class="font-bold text-slate-300">Campus Gig</span>
-                <span>— Smart Part-Time Job Connect</span>
-            </div>
-            <p>© Campus Gig Platform. Designed for verified campus job matching.</p>
-        </div>
-    </footer>
-
-    <!-- AUTHENTICATION MODAL (LOGIN / SIGNUP) -->
-    <div id="authModal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-6 sm:p-8 relative shadow-2xl">
-            
-            <!-- Close Button -->
-            <button onclick="closeAuthModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white text-lg font-bold">
-                ✕
-            </button>
-
-            <!-- Modal Header -->
-            <div class="mb-6">
-                <h3 id="modalTitle" class="text-2xl font-bold text-white tracking-tight">Log In to Campus Gig</h3>
-                <p id="modalSubtitle" class="text-slate-400 text-sm mt-1">Enter your credentials to access your job feed.</p>
-            </div>
-
-            <!-- Form -->
-            <form onsubmit="handleAuthSubmit(event)" class="space-y-4">
-                <div id="nameField" class="hidden space-y-1">
-                    <label class="text-xs font-semibold text-slate-300">Full Name</label>
-                    <input type="text" placeholder="Sandip Aryal" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:border-brand-500 focus:outline-none">
-                </div>
-
-                <div class="space-y-1">
-                    <label class="text-xs font-semibold text-slate-300">Email Address</label>
-                    <input type="email" required placeholder="student@mitadt.edu.in" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:border-brand-500 focus:outline-none">
-                </div>
-
-                <div class="space-y-1">
-                    <label class="text-xs font-semibold text-slate-300">Password</label>
-                    <input type="password" required placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:border-brand-500 focus:outline-none">
-                </div>
-
-                <button type="submit" id="modalSubmitBtn" class="w-full py-3 bg-brand-600 hover:bg-brand-500 text-white font-bold text-sm rounded-xl shadow-lg shadow-brand-600/30 transition-all mt-2">
-                    Log In
+              <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">I am continuing as</label>
+              <div class="grid grid-cols-2 gap-2.5">
+                <button type="button" id="role-student-btn" onclick="setAuthRole('Student')" class="py-2.5 px-3 rounded-xl border-2 border-sky-500 bg-sky-50/70 text-slate-900 font-bold text-xs flex items-center justify-center gap-1.5 transition-all">
+                  🎓 College Student
                 </button>
+                <button type="button" id="role-employer-btn" onclick="setAuthRole('Employer')" class="py-2.5 px-3 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 font-semibold text-xs flex items-center justify-center gap-1.5 transition-all">
+                  🏪 Store Employer
+                </button>
+              </div>
+            </div>
+
+            <form id="auth-landing-form" onsubmit="handleAuthSubmit(event)" class="space-y-3.5">
+              <div id="auth-name-group" class="hidden">
+                <label for="auth-fullname" class="block text-xs font-semibold text-slate-700 mb-1">Full Name *</label>
+                <input id="auth-fullname" type="text" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+              </div>
+
+              <div>
+                <label for="auth-email" class="block text-xs font-semibold text-slate-700 mb-1">College or Store Email *</label>
+                <input id="auth-email" type="email" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+              </div>
+
+              <div id="auth-org-group" class="hidden">
+                <label id="auth-org-label" for="auth-org" class="block text-xs font-semibold text-slate-700 mb-1">College / University *</label>
+                <input id="auth-org" type="text" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+              </div>
+
+              <div id="auth-campus-group" class="hidden">
+                <label for="auth-campus" class="block text-xs font-semibold text-slate-700 mb-1">Pune Locality / Campus Hub</label>
+                <select id="auth-campus" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-base sm:text-sm bg-white focus:outline-none focus:ring-2 focus:ring-sky-500">
+                  <option value="Hadapsar / Loni Kalbhor">Hadapsar / Loni Kalbhor (MIT ADT / Amanora)</option>
+                  <option value="Viman Nagar / Koregaon Park">Viman Nagar / Koregaon Park (Symbiosis)</option>
+                  <option value="Kothrud / Karve Nagar">Kothrud / Karve Nagar (MIT-WPU / Cummins)</option>
+                  <option value="Hinjawadi / Wakad">Hinjawadi / Wakad (IIIT / Indira)</option>
+                </select>
+              </div>
+
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <label for="auth-password" class="block text-xs font-semibold text-slate-700">Password *</label>
+                  <span class="text-[11px] text-slate-400">Min 4 characters</span>
+                </div>
+                <div class="relative">
+                  <input id="auth-password" type="password" required minlength="4" class="w-full pl-3.5 pr-11 py-2.5 rounded-xl border border-slate-200 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                  <button
+                    type="button"
+                    id="toggle-password-btn"
+                    onclick="togglePasswordVisibility()"
+                    aria-label="Show password"
+                    class="absolute inset-y-0 right-0 px-3.5 flex items-center justify-center text-slate-400 hover:text-sky-600 transition-colors focus:outline-none"
+                  >
+                    <svg id="eye-open-icon" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                    <svg id="eye-closed-icon" class="w-4 h-4 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
+                      <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" />
+                      <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" />
+                      <line x1="2" x2="22" y1="2" y2="22" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <button id="auth-submit-btn" type="submit" class="w-full py-3 px-4 rounded-xl bg-orange-500 hover:bg-orange-600 active:scale-[0.99] text-white font-display font-bold text-sm shadow-md hover:shadow-glow transition-all">
+                Log In to Student Workspace →
+              </button>
             </form>
 
-            <!-- Toggle between Login & Signup -->
-            <div class="mt-6 pt-4 border-t border-slate-800 text-center text-xs text-slate-400">
-                <span id="modalToggleText">Don't have an account?</span>
-                <button id="modalToggleBtn" onclick="toggleAuthMode()" class="text-brand-400 font-bold hover:underline ml-1">
-                    Sign Up
-                </button>
+            <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+              <span>Want a quick preview?</span>
+              <button type="button" onclick="quickDemoLogin()" class="font-bold text-sky-600 hover:text-slate-900 hover:underline">
+                1-Click Instant Enter
+              </button>
             </div>
+          </div>
         </div>
+      </div>
     </div>
 
-    <!-- JAVASCRIPT CONTROLS -->
-    <script>
-        const API_BASE = 'https://campus-gig-z7ps.onrender.com/api';
-        const socket = io('https://campus-gig-z7ps.onrender.com');
+    <footer class="relative z-10 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 text-center sm:flex sm:items-center sm:justify-between text-[11px] sm:text-xs text-slate-500">
+      <span>Campus Gig • Smart Shift Matching for Pune</span>
+      <span class="block sm:inline mt-0.5 sm:mt-0">Verified Local Employers • Dual Student &amp; Employer Portals</span>
+    </footer>
+  </section>
 
-        // Listen for instant WebSocket updates
-        socket.on('job_updated', (data) => {
-            console.log('Shift updated live:', data);
-            const currentRadius = document.getElementById('radiusRange').value;
-            filterJobsByRadius(currentRadius);
+  <!-- ==================== MAIN MULTI-VIEW APPLICATION SHELL ==================== -->
+  <div id="main-app-shell" class="relative z-10 hidden min-h-screen flex-col pb-24 md:pb-0 bg-transparent">
+    <header class="sticky top-0 z-40 w-full backdrop-blur-md bg-white/95 border-b border-slate-200/80">
+      <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-2">
+        <button onclick="switchView(state.user.role === 'Employer' ? 'employers' : 'overview')" class="flex items-center gap-2 sm:gap-3 group shrink-0 text-left focus:outline-none">
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center shadow-2xs group-hover:border-sky-300 transition-all p-1">
+            <svg class="w-7 h-7 sm:w-8 sm:h-8" viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M160 22L82 54L160 84L238 54L160 22Z" fill="url(#cgBrandSky)" />
+              <path d="M160 22L238 54L160 84V22Z" fill="url(#cgBrandNavy)" />
+              <path d="M114 72V93L160 76L206 93V72L160 90L114 72Z" fill="url(#cgBrandSky)" />
+              <path d="M160 88L118 106V120C93 137 78 166 80 198C82 235 110 270 160 310C210 270 238 235 240 198C242 166 227 137 202 120V106L160 88ZM160 270C121 242 102 215 101 188C100 157 125 130 160 130C195 130 220 157 219 188C218 215 199 242 160 270Z" fill="url(#cgBrandSky)" />
+              <path d="M160 88L202 106V120C227 137 242 166 240 198C238 235 210 270 160 310V270C199 242 218 215 219 188C220 157 195 130 160 130V88Z" fill="url(#cgBrandNavy)" />
+              <g transform="rotate(-11 160 194)">
+                <path d="M142 158V149C142 144 146 140 151 140H169C174 140 178 144 178 149V158" stroke="url(#cgBrandSky)" stroke-width="9" stroke-linecap="round" />
+                <rect x="112" y="158" width="96" height="66" rx="14" fill="url(#cgBrandSky)" />
+                <path d="M112 180C131 191 189 191 208 180" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" />
+                <rect x="151" y="178" width="18" height="20" rx="5" fill="#FFFFFF" />
+                <rect x="156" y="183" width="8" height="10" rx="2.5" fill="url(#cgBrandNavy)" />
+              </g>
+            </svg>
+          </div>
+          <div class="leading-tight">
+            <span class="font-display font-extrabold text-sm sm:text-lg block tracking-tight">
+              <span class="text-slate-900">campus</span><span class="text-sky-600">gig</span>
+            </span>
+            <span id="nav-mode-subtitle" class="text-[10px] sm:text-[11px] font-semibold text-sky-600 block -mt-0.5">Student Workspace</span>
+          </div>
+        </button>
+
+        <!-- Desktop Navigation (Dynamically switches based on Student vs Employer Role) -->
+        <nav id="desktop-nav-container" aria-label="Primary Workspace Navigation" class="hidden md:flex items-center gap-1 bg-slate-100/90 p-1.5 rounded-2xl border border-slate-200/70">
+          <!-- Populated dynamically -->
+        </nav>
+
+        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <button id="nav-streak-btn" onclick="openStreakModal()" title="View Reliability Streak & Campus Badges" class="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-full bg-amber-50 hover:bg-amber-100 active:scale-95 border border-amber-200 text-amber-800 text-xs font-extrabold shadow-2xs transition-all">
+            <span>🔥</span>
+            <span id="nav-streak-count">5</span>
+            <span class="hidden sm:inline font-semibold text-[11px]">Streak</span>
+          </button>
+
+          <button onclick="openAuthModal()" class="flex items-center gap-1.5 sm:gap-2 pl-1.5 pr-2.5 sm:pl-2 sm:pr-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 active:scale-95 text-white text-xs sm:text-sm font-medium shadow-2xs transition-all">
+            <span id="nav-avatar" class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-sky-500 text-white font-bold text-[11px] sm:text-xs flex items-center justify-center">A</span>
+            <span id="nav-user-name" class="max-w-[78px] sm:max-w-[120px] truncate">Aarav</span>
+          </button>
+
+          <button onclick="signOutUser()" title="Sign Out to Login Screen" class="p-1.5 sm:px-3 sm:py-1.5 rounded-full border border-slate-200 hover:border-rose-200 hover:bg-rose-50 text-slate-600 hover:text-rose-600 text-xs font-semibold transition-colors flex items-center justify-center bg-white">
+            <span class="hidden sm:inline">Sign Out</span>
+            <svg class="w-4 h-4 sm:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="app-viewport" class="flex-1 max-w-7xl w-full mx-auto px-3.5 sm:px-6 lg:px-8 py-4 sm:py-8">
+      <!-- Active View Renders Here -->
+    </main>
+
+    <!-- Mobile Bottom Navigation Bar -->
+    <nav id="mobile-nav-container" aria-label="Mobile Navigation" class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-lg border-t border-slate-200/90 px-1.5 pt-1.5 pb-safe grid gap-1 shadow-[0_-4px_20px_rgba(15,23,42,0.06)]">
+      <!-- Populated dynamically -->
+    </nav>
+  </div>
+
+  <!-- ==================== MODALS & TOASTS ==================== -->
+  <div id="streak-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl max-w-lg w-full max-h-[88vh] overflow-y-auto p-5 sm:p-7 shadow-2xl border border-slate-200 space-y-5 relative animate-view">
+      <div id="streak-modal-content"></div>
+    </div>
+  </div>
+
+  <div id="job-detail-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl max-w-lg w-full max-h-[88vh] overflow-y-auto p-5 sm:p-7 shadow-2xl border border-slate-200 space-y-5 relative animate-view">
+      <div id="job-detail-content"></div>
+    </div>
+  </div>
+
+  <!-- EMPLOYER FORM ASSIGNMENT MODAL -->
+  <div id="assign-form-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl max-w-md w-full max-h-[88vh] overflow-y-auto p-5 sm:p-7 shadow-2xl border border-slate-200 space-y-4 animate-view">
+      <div class="flex items-center justify-between">
+        <h3 class="font-display font-bold text-lg text-slate-900">Assign Onboarding Form</h3>
+        <button onclick="closeModal('assign-form-modal')" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold">✕</button>
+      </div>
+      <p class="text-xs text-slate-500">Send a digital form for applicants to fill out before their first shift.</p>
+      <div class="space-y-2.5">
+        <label class="block text-xs font-semibold text-slate-700">Select Form Template</label>
+        <select id="modal-form-select" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm bg-white">
+          <option value="Bank Details & KYC Form">Bank Details &amp; Aadhaar/PAN KYC Form</option>
+          <option value="Uniform Size & ID Verification">Uniform Size &amp; College ID Verification</option>
+          <option value="Weekly Shift Availability & Emergency Contact">Weekly Shift Availability &amp; Emergency Contact</option>
+        </select>
+      </div>
+      <button onclick="submitAssignForm()" class="w-full py-3 rounded-xl bg-orange-500 text-white font-bold text-sm shadow-sm">Send Form to Applicant →</button>
+    </div>
+  </div>
+
+  <div id="auth-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl max-w-md w-full max-h-[88vh] overflow-y-auto p-5 sm:p-7 shadow-2xl border border-slate-200 space-y-5 animate-view">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="font-display font-bold text-lg text-slate-900">Profile &amp; Workspace Role</h3>
+          <p class="text-xs text-slate-500">Switch between Student and Employer view interfaces instantly.</p>
+        </div>
+        <button onclick="closeModal('auth-modal')" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 font-bold">✕</button>
+      </div>
+
+      <form onsubmit="saveProfileModal(event)" class="space-y-4">
+        <div>
+          <label for="modal-user-name" class="block text-xs font-semibold text-slate-700 mb-1">Display Name</label>
+          <input id="modal-user-name" type="text" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+        </div>
+        <div>
+          <label for="modal-user-org" class="block text-xs font-semibold text-slate-700 mb-1">College or Store Name</label>
+          <input id="modal-user-org" type="text" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+        </div>
+        <div>
+          <label for="modal-user-role" class="block text-xs font-semibold text-slate-700 mb-1">Workspace Mode</label>
+          <select id="modal-user-role" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-base sm:text-sm bg-white focus:outline-none focus:ring-2 focus:ring-sky-500">
+            <option value="Student">🎓 College Student (Job Seeker Interface)</option>
+            <option value="Employer">🏪 Store Employer (Employer Dashboard Interface)</option>
+          </select>
+        </div>
+
+        <div class="pt-2 flex flex-wrap items-center justify-between gap-2">
+          <button type="button" onclick="resetAllDemoData()" class="px-3 py-2.5 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors">
+            Reset Demo
+          </button>
+          <button type="button" onclick="closeModal('auth-modal'); signOutUser();" class="px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors">
+            Sign Out
+          </button>
+          <button type="submit" class="flex-1 py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm shadow-sm transition-all">
+            Save &amp; Switch Role
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast-container" class="fixed bottom-20 md:bottom-6 inset-x-4 sm:inset-x-auto sm:right-5 z-50 flex flex-col gap-2 max-w-sm sm:w-full mx-auto sm:mx-0 pointer-events-none"></div>
+
+  <!-- ==================== REACTIVE MULTI-VIEW SPA ENGINE ==================== -->
+  <script>
+    const STORAGE_KEY = 'campus_gig_dualinterface_v8';
+    const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const SLOT_META = {
+      morning: { label: 'Morning', shortLabel: 'Morn', time: '09:00 - 13:00', hours: 4 },
+      afternoon: { label: 'Afternoon', shortLabel: 'Noon', time: '13:00 - 16:00', hours: 3 },
+      evening: { label: 'Evening', shortLabel: 'Eve', time: '16:00 - 20:00', hours: 4 }
+    };
+    const GSTIN_REGEX = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+
+    let authUIState = { mode: 'login', role: 'Student' };
+    let mobileUI = { filtersExpanded: false, selectedDay: 'Mon', mobileChatShowList: false };
+
+    const DEFAULT_STATE = {
+      isAuthenticated: false,
+      activeView: 'overview',
+      user: {
+        name: 'Aarav Sharma',
+        email: 'aarav.sharma@mituniversity.edu.in',
+        college: 'MIT ADT University, Pune',
+        campus: 'Hadapsar / Loni Kalbhor',
+        role: 'Student'
+      },
+      streak: {
+        current: 5,
+        best: 7,
+        reliabilityScore: 98,
+        totalCompletedShifts: 14,
+        bonusPerHour: 15,
+        nextMilestone: 7,
+        history: [
+          { day: 'Mon', status: 'completed', store: 'Decathlon' },
+          { day: 'Tue', status: 'completed', store: 'Zudio' },
+          { day: 'Wed', status: 'completed', store: 'Decathlon' },
+          { day: 'Thu', status: 'completed', store: 'Third Wave' },
+          { day: 'Fri', status: 'completed', store: 'Decathlon' },
+          { day: 'Sat', status: 'upcoming', store: 'Next QR Check-In' }
+        ],
+        badges: [
+          { id: 'punctual', icon: '⚡', name: 'Zero-Late Streak', desc: '5 consecutive shifts clocked in on time', unlocked: true },
+          { id: 'pos_pro', icon: '💳', name: 'Fast POS Cashier', desc: 'Endorsed by Zudio Hadapsar Manager', unlocked: true },
+          { id: 'customer_star', icon: '⭐', name: '4.9★ Floor Host', desc: 'Top student rating at Decathlon Amanora', unlocked: true },
+          { id: 'super_streak', icon: '👑', name: '7-Shift Gold Tier', desc: 'Unlocks +₹25/hr surge bonus on all shifts', unlocked: false }
+        ]
+      },
+      activeChatJobId: 101,
+      activeEmployerApplicantId: 1,
+      chats: {
+        101: {
+          jobId: 101,
+          storeName: 'Decathlon • Amanora Mall',
+          managerName: 'Rohan Deshmukh (Floor Lead)',
+          roleTitle: 'Floor Associate',
+          maskedPhone: '+91 80XXXX-XX42 (Masked)',
+          unread: 1,
+          messages: [
+            { id: 1, sender: 'store', text: 'Hi Aarav! Your college timetable matches our 4:30 PM - 8:30 PM slot nicely.', time: '4:10 PM' },
+            { id: 2, sender: 'store', text: 'Let me know if you can take the Cycling & Running aisle tomorrow evening. Bring your college ID for gate pass!', time: '4:12 PM' }
+          ]
+        },
+        102: {
+          jobId: 102,
+          storeName: 'Zudio • Hadapsar',
+          managerName: 'Priya Kulkarni (Store Manager)',
+          roleTitle: 'Cashier & Inventory Assistant',
+          maskedPhone: '+91 80XXXX-XX89 (Masked)',
+          unread: 0,
+          messages: [
+            { id: 1, sender: 'store', text: 'Welcome to Zudio Hadapsar shift pool! Use the QR scanner at Gate 2 when you arrive.', time: 'Yesterday' }
+          ]
+        }
+      },
+      employerApplicants: [
+        {
+          id: 1,
+          name: 'Aarav Sharma',
+          college: 'MIT ADT University (SY CSE)',
+          roleApplied: 'Floor Associate',
+          store: 'Decathlon • Amanora Mall',
+          status: 'Shortlisted',
+          reliability: '98% (5 Shift Streak)',
+          assignedForm: 'Bank Details & KYC Form',
+          formStatus: 'Submitted ✓',
+          messages: [
+            { sender: 'student', text: 'Hi sir, I have filled out the KYC form and am ready for tomorrow evening shift!' },
+            { sender: 'store', text: 'Perfect Aarav. Gate pass #402 has been issued to your email.' }
+          ]
+        },
+        {
+          id: 2,
+          name: 'Sneha Patil',
+          college: 'Symbiosis School of Economics',
+          roleApplied: 'Cashier & Inventory Assistant',
+          store: 'Zudio • Hadapsar',
+          status: 'Pending Review',
+          reliability: '100% (8 Shift Streak)',
+          assignedForm: 'Uniform Size & ID Verification',
+          formStatus: 'Pending',
+          messages: [
+            { sender: 'student', text: 'Hello! I applied for the evening POS cashier shift.' }
+          ]
+        },
+        {
+          id: 3,
+          name: 'Rohan Deshmukh',
+          college: 'IIIT Pune',
+          roleApplied: 'Evening Barista & Counter Crew',
+          store: 'Third Wave Coffee • Magarpatta',
+          status: 'Hired ✓',
+          reliability: '95% (3 Shift Streak)',
+          assignedForm: 'Weekly Shift Availability',
+          formStatus: 'Submitted ✓',
+          messages: [
+            { sender: 'store', text: 'Welcome aboard Rohan! Apron will be at the counter.' }
+          ]
+        }
+      ],
+      filters: { maxRadius: 5.0, slotFilter: 'all', hideConflicts: false, sortBy: 'match' },
+      schedule: {
+        Mon: { morning: false, afternoon: false, evening: true },
+        Tue: { morning: false, afternoon: true, evening: true },
+        Wed: { morning: false, afternoon: false, evening: true },
+        Thu: { morning: false, afternoon: true, evening: true },
+        Fri: { morning: false, afternoon: false, evening: true },
+        Sat: { morning: true, afternoon: true, evening: true }
+      },
+      appliedIds: [101, 102],
+      jobs: [
+        {
+          id: 101,
+          title: 'Floor Associate',
+          company: 'Decathlon',
+          area: 'Amanora Mall, Hadapsar',
+          distance: 2.1,
+          slot: 'evening',
+          timeLabel: '4:30 PM - 8:30 PM',
+          days: ['Mon', 'Wed', 'Fri', 'Sat'],
+          pay: 185,
+          gstin: '27AAACD1234F1Z5',
+          category: 'Sports Retail',
+          description: 'Assist customers with sports gear trials, restock running & cycling aisles, and maintain store floor presentation.'
+        },
+        {
+          id: 102,
+          title: 'Cashier & Inventory Assistant',
+          company: 'Zudio',
+          area: 'Hadapsar Main Road',
+          distance: 1.2,
+          slot: 'evening',
+          timeLabel: '5:00 PM - 9:00 PM',
+          days: ['Tue', 'Thu', 'Sat'],
+          pay: 165,
+          gstin: '27AAACT5678K1Z2',
+          category: 'Fashion Retail',
+          description: 'Handle express POS billing during evening rush hours and tag incoming apparel inventory.'
+        },
+        {
+          id: 103,
+          title: 'Evening Barista & Counter Crew',
+          company: 'Third Wave Coffee',
+          area: 'Magarpatta City',
+          distance: 2.8,
+          slot: 'evening',
+          timeLabel: '4:00 PM - 8:00 PM',
+          days: ['Mon', 'Tue', 'Thu', 'Fri'],
+          pay: 190,
+          gstin: '27AABCT9012M1Z8',
+          category: 'Cafe & Hospitality',
+          description: 'Prepare specialty beverages, manage counter orders, and deliver warm hospitality to evening guests.'
+        },
+        {
+          id: 104,
+          title: 'Campus Library & Print Desk',
+          company: 'FedEx Office Partner',
+          area: 'Loni Kalbhor Gate 2',
+          distance: 0.6,
+          slot: 'afternoon',
+          timeLabel: '1:15 PM - 4:15 PM',
+          days: ['Tue', 'Thu', 'Sat'],
+          pay: 155,
+          gstin: '27AAACF3344L1Z1',
+          category: 'Campus Services',
+          description: 'Assist students with thesis binding, CAD plotting, and express courier dispatches right outside campus.'
+        }
+      ]
+    };
+
+    let state = loadState();
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return structuredClone(DEFAULT_STATE);
+        const parsed = JSON.parse(raw);
+        return {
+          ...structuredClone(DEFAULT_STATE),
+          ...parsed,
+          user: { ...DEFAULT_STATE.user, ...(parsed.user || {}) },
+          streak: { ...DEFAULT_STATE.streak, ...(parsed.streak || {}) },
+          chats: { ...structuredClone(DEFAULT_STATE.chats), ...(parsed.chats || {}) },
+          employerApplicants: parsed.employerApplicants || DEFAULT_STATE.employerApplicants,
+          filters: { ...DEFAULT_STATE.filters, ...(parsed.filters || {}) },
+          schedule: { ...DEFAULT_STATE.schedule, ...(parsed.schedule || {}) }
+        };
+      } catch (err) {
+        return structuredClone(DEFAULT_STATE);
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (err) {
+        console.warn('Storage quota exceeded:', err);
+      }
+    }
+
+    function switchView(viewName) {
+      state.activeView = viewName;
+      if (viewName === 'messages' && state.chats[state.activeChatJobId]) {
+        state.chats[state.activeChatJobId].unread = 0;
+      }
+      saveState();
+      renderApp();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleMobileFilterDrawer() {
+      mobileUI.filtersExpanded = !mobileUI.filtersExpanded;
+      renderApp();
+    }
+
+    function selectMobileScheduleDay(day) {
+      mobileUI.selectedDay = day;
+      renderApp();
+    }
+
+    // ==================== AUTH FLOW ====================
+    function togglePasswordVisibility() {
+      const passwordInput = document.getElementById('auth-password');
+      const eyeOpen = document.getElementById('eye-open-icon');
+      const eyeClosed = document.getElementById('eye-closed-icon');
+      const toggleBtn = document.getElementById('toggle-password-btn');
+      if (!passwordInput) return;
+      const isHidden = passwordInput.type === 'password';
+      passwordInput.type = isHidden ? 'text' : 'password';
+      eyeOpen.classList.toggle('hidden', isHidden);
+      eyeClosed.classList.toggle('hidden', !isHidden);
+    }
+
+    function setAuthMode(mode) {
+      authUIState.mode = mode;
+      const isSignup = mode === 'signup';
+      document.getElementById('tab-login-btn').className = !isSignup
+        ? 'py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-white text-slate-900 shadow-xs transition-all'
+        : 'py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-500 hover:text-slate-900 transition-all';
+      document.getElementById('tab-signup-btn').className = isSignup
+        ? 'py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-white text-slate-900 shadow-xs transition-all'
+        : 'py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-500 hover:text-slate-900 transition-all';
+
+      ['auth-name-group', 'auth-org-group', 'auth-campus-group'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle('hidden', !isSignup);
+      });
+      document.getElementById('auth-fullname').required = isSignup;
+      document.getElementById('auth-org').required = isSignup;
+      updateAuthSubmitButton();
+    }
+
+    function setAuthRole(role) {
+      authUIState.role = role;
+      const isStudent = role === 'Student';
+      document.getElementById('role-student-btn').className = isStudent
+        ? 'py-2.5 px-3 rounded-xl border-2 border-sky-500 bg-sky-50/70 text-slate-900 font-bold text-xs flex items-center justify-center gap-1.5 transition-all'
+        : 'py-2.5 px-3 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 font-semibold text-xs flex items-center justify-center gap-1.5 transition-all';
+      document.getElementById('role-employer-btn').className = !isStudent
+        ? 'py-2.5 px-3 rounded-xl border-2 border-sky-500 bg-sky-50/70 text-slate-900 font-bold text-xs flex items-center justify-center gap-1.5 transition-all'
+        : 'py-2.5 px-3 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 font-semibold text-xs flex items-center justify-center gap-1.5 transition-all';
+
+      const orgLabel = document.getElementById('auth-org-label');
+      orgLabel.textContent = isStudent ? 'College / University *' : 'Store / Business Name *';
+      updateAuthSubmitButton();
+    }
+
+    function updateAuthSubmitButton() {
+      const btn = document.getElementById('auth-submit-btn');
+      if (!btn) return;
+      const actionText = authUIState.mode === 'signup' ? 'Create Account & Enter' : 'Log In to';
+      const targetText = authUIState.role === 'Employer' ? 'Employer Portal →' : 'Student Workspace →';
+      btn.textContent = `${actionText} ${targetText}`;
+    }
+
+    function handleAuthSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('auth-email').value.trim();
+      const password = document.getElementById('auth-password').value;
+      if (!email || password.length < 4) {
+        showToast('Please enter a valid email and password (min 4 chars).', 'error');
+        return;
+      }
+
+      let resolvedName = state.user.name;
+      let resolvedOrg = state.user.college;
+      let resolvedCampus = state.user.campus;
+
+      if (authUIState.mode === 'signup') {
+        resolvedName = document.getElementById('auth-fullname').value.trim() || (authUIState.role === 'Employer' ? 'Store Manager' : 'Student User');
+        resolvedOrg = document.getElementById('auth-org').value.trim() || (authUIState.role === 'Employer' ? 'Decathlon Amanora, Pune' : 'MIT ADT University');
+        resolvedCampus = document.getElementById('auth-campus').value;
+      } else {
+        resolvedName = authUIState.role === 'Employer' ? 'Rohan Deshmukh (Manager)' : 'Aarav Sharma';
+        resolvedOrg = authUIState.role === 'Employer' ? 'Decathlon Amanora, Pune' : 'MIT ADT University, Pune';
+      }
+
+      state.isAuthenticated = true;
+      state.user = { name: resolvedName, email, college: resolvedOrg, campus: resolvedCampus, role: authUIState.role };
+      state.activeView = authUIState.role === 'Employer' ? 'employers' : 'overview';
+
+      saveState();
+      renderApp();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      showToast(`Welcome to Campus Gig, ${resolvedName} (${authUIState.role} Portal)!`, 'success');
+    }
+
+    function quickDemoLogin() {
+      state.isAuthenticated = true;
+      state.user = {
+        name: authUIState.role === 'Employer' ? 'Rohan Deshmukh (Manager)' : 'Aarav Sharma',
+        email: authUIState.role === 'Employer' ? 'rohan@decathlon.in' : 'aarav.sharma@mituniversity.edu.in',
+        college: authUIState.role === 'Employer' ? 'Decathlon Amanora, Pune' : 'MIT ADT University, Pune',
+        campus: 'Hadapsar / Loni Kalbhor',
+        role: authUIState.role
+      };
+      state.activeView = authUIState.role === 'Employer' ? 'employers' : 'overview';
+      saveState();
+      renderApp();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      showToast(`Instant Demo: Signed in as ${state.user.name} (${state.user.role} Interface)`, 'success');
+    }
+
+    function signOutUser() {
+      state.isAuthenticated = false;
+      saveState();
+      renderApp();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      showToast('Signed out safely.', 'info');
+    }
+
+    // ==================== METRICS & EVAL ====================
+    function calculateScheduleMetrics() {
+      let freeHours = 0;
+      let freeSlotsCount = 0;
+      DAYS.forEach(day => {
+        Object.keys(SLOT_META).forEach(slotKey => {
+          if (state.schedule[day] && state.schedule[day][slotKey]) {
+            freeHours += SLOT_META[slotKey].hours;
+            freeSlotsCount += 1;
+          }
         });
+      });
+      return { freeHours, freeSlotsCount };
+    }
 
-        let currentAuthMode = 'login';
-        let totalFreeHours = 20;
+    function evaluateJobMatch(job) {
+      const requiredDays = job.days && job.days.length ? job.days : ['Mon', 'Wed', 'Fri'];
+      const matchingDays = requiredDays.filter(d => state.schedule[d] && state.schedule[d][job.slot]);
+      const conflictDays = requiredDays.filter(d => !state.schedule[d] || !state.schedule[d][job.slot]);
+      const availabilityRatio = matchingDays.length / requiredDays.length;
+      const proximityScore = Math.max(0, 1 - job.distance / 12);
+      const rawScore = Math.round((availabilityRatio * 0.75 + proximityScore * 0.25) * 100);
+      const matchPercent = Math.min(99, Math.max(35, rawScore));
+      return { matchPercent, hasConflict: conflictDays.length > 0, conflictDays, matchingDays, weeklyHours: requiredDays.length * SLOT_META[job.slot].hours, weeklyPay: requiredDays.length * SLOT_META[job.slot].hours * job.pay };
+    }
 
-        // Auth Modal Controls
-        function openAuthModal(mode) {
-            currentAuthMode = mode;
-            const modal = document.getElementById('authModal');
-            const title = document.getElementById('modalTitle');
-            const subtitle = document.getElementById('modalSubtitle');
-            const submitBtn = document.getElementById('modalSubmitBtn');
-            const nameField = document.getElementById('nameField');
-            const toggleText = document.getElementById('modalToggleText');
-            const toggleBtn = document.getElementById('modalToggleBtn');
-
-            if (mode === 'signup') {
-                title.innerText = 'Create your Account';
-                subtitle.innerText = 'Start matching part-time jobs around your classes.';
-                submitBtn.innerText = 'Create Account';
-                nameField.classList.remove('hidden');
-                toggleText.innerText = 'Already have an account?';
-                toggleBtn.innerText = 'Log In';
-            } else {
-                title.innerText = 'Log In to Campus Gig';
-                subtitle.innerText = 'Enter your credentials to access your job feed.';
-                submitBtn.innerText = 'Log In';
-                nameField.classList.add('hidden');
-                toggleText.innerText = "Don't have an account?";
-                toggleBtn.innerText = 'Sign Up';
-            }
-
-            modal.classList.remove('hidden');
-        }
-
-        function closeAuthModal() {
-            document.getElementById('authModal').classList.add('hidden');
-        }
-
-        function toggleAuthMode() {
-            openAuthModal(currentAuthMode === 'login' ? 'signup' : 'login');
-        }
-
-        // Real HTTP Auth Request to Express Backend
-        async function handleAuthSubmit(e) {
-            e.preventDefault();
-            const email = e.target.querySelector('input[type="email"]').value;
-            const password = e.target.querySelector('input[type="password"]').value;
-            const name = e.target.querySelector('input[type="text"]')?.value;
-
-            const endpoint = currentAuthMode === 'signup' ? `${API_BASE}/auth/register` : `${API_BASE}/auth/login`;
-            const payload = currentAuthMode === 'signup' ? { name, email, password } : { email, password };
-
-            try {
-                const response = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const data = await response.json();
-
-                if (response.ok) {
-                    localStorage.setItem('token', data.token);
-
-                    const userData = data.user || { name: name || email.split('@')[0], email };
-                    if (!userData.email) userData.email = email;
-                    localStorage.setItem('user', JSON.stringify(userData));
-                    localStorage.setItem('userName', userData.name || email.split('@')[0]);
-
-                    updateAuthUI();
-                    closeAuthModal();
-                } else {
-                    alert(data.message || 'Authentication failed');
-                }
-            } catch (err) {
-                alert('Could not connect to backend server');
-            }
-        }
-
-        // Mobile Menu Toggle
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobileMenu');
-            menu.classList.toggle('hidden');
-        }
-
-        // Real API Fetch Job Radius Filtering
-        async function filterJobsByRadius(val) {
-            document.getElementById('radiusVal').innerText = val + ' km';
-
-            try {
-                const response = await fetch(`${API_BASE}/jobs?radius=${val}`);
-                const jobs = await response.json();
-
-                const cards = document.querySelectorAll('.job-card');
-                let visibleCount = 0;
-
-                cards.forEach(card => {
-                    const cardDistance = parseFloat(card.getAttribute('data-distance'));
-                    if (cardDistance <= parseFloat(val)) {
-                        card.style.display = 'flex';
-                        visibleCount++;
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-
-                const noJobsMsg = document.getElementById('noJobsMsg');
-                if (visibleCount === 0 && jobs.length === 0) {
-                    noJobsMsg.classList.remove('hidden');
-                } else {
-                    noJobsMsg.classList.add('hidden');
-                }
-            } catch (err) {
-                console.log('Filtering locally fallback...');
-            }
-        }
-
-        // Schedule Slot Toggle & Hours Calculation
-        function toggleSlot(btn, hours) {
-            const isFree = btn.getAttribute('data-free') === 'true';
-
-            if (isFree) {
-                btn.innerText = 'Class (Blocked)';
-                btn.className = 'slot-btn py-3 bg-red-500/10 text-red-400 border border-red-500/30 rounded-xl transition-all';
-                btn.setAttribute('data-free', 'false');
-                totalFreeHours = Math.max(0, totalFreeHours - hours);
-            } else {
-                btn.innerText = 'Free Slot';
-                btn.className = 'slot-btn py-3 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-xl transition-all';
-                btn.setAttribute('data-free', 'true');
-                totalFreeHours += hours;
-            }
-
-            document.getElementById('freeHoursCount').innerText = totalFreeHours;
-            if (document.getElementById('dashFreeHours')) {
-                document.getElementById('dashFreeHours').innerText = `${totalFreeHours} hrs`;
-            }
-        }
-
-        // Run immediately when page loads to check if user is already logged in
-        document.addEventListener('DOMContentLoaded', () => {
-            updateAuthUI();
+    function getFilteredJobs() {
+      return state.jobs
+        .map(job => ({ ...job, eval: evaluateJobMatch(job) }))
+        .filter(job => job.distance <= state.filters.maxRadius)
+        .filter(job => state.filters.slotFilter === 'all' || job.slot === state.filters.slotFilter)
+        .filter(job => !state.filters.hideConflicts || !job.eval.hasConflict)
+        .sort((a, b) => {
+          if (state.filters.sortBy === 'pay') return b.pay - a.pay;
+          if (state.filters.sortBy === 'distance') return a.distance - b.distance;
+          return b.eval.matchPercent - a.eval.matchPercent;
         });
+    }
 
-        function updateAuthUI() {
-            const token = localStorage.getItem('token');
-            const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
-            const userName = storedUser?.name || localStorage.getItem('userName') || 'Student';
-            const userEmail = storedUser?.email || '';
-            const initial = userName.charAt(0).toUpperCase();
+    function getTotalUnreadMessages() {
+      return Object.values(state.chats || {}).reduce((sum, chat) => sum + (chat.unread || 0), 0);
+    }
 
-            const heroSection = document.getElementById('heroSection');
-            const studentDashboard = document.getElementById('studentDashboard');
-            const guestNav = document.getElementById('guestNavActions');
-            const userNav = document.getElementById('userNavActions');
-            const mobileGuest = document.getElementById('mobileGuestActions');
-            const mobileUser = document.getElementById('mobileUserActions');
+    // ==================== GLOBAL CHROME & NAVIGATION RENDERERS ====================
+    function updateGlobalChromes() {
+      const isEmployer = state.user.role === 'Employer';
+      const firstName = state.user.name.split(' ')[0] || 'User';
+      const totalUnread = getTotalUnreadMessages();
 
-            if (token) {
-                if (heroSection) heroSection.classList.add('hidden');
-                if (studentDashboard) studentDashboard.classList.remove('hidden');
+      document.getElementById('nav-avatar').textContent = firstName.charAt(0).toUpperCase();
+      document.getElementById('nav-user-name').textContent = firstName;
+      document.getElementById('nav-mode-subtitle').textContent = isEmployer ? 'Employer Portal' : 'Student Workspace';
 
-                if (guestNav) {
-                    guestNav.classList.add('hidden');
-                    guestNav.classList.remove('sm:flex');
-                }
-                if (userNav) {
-                    userNav.classList.remove('hidden');
-                    userNav.classList.add('flex');
-                }
-                if (mobileGuest) mobileGuest.classList.add('hidden');
-                if (mobileUser) mobileUser.classList.remove('hidden');
+      const streakBtn = document.getElementById('nav-streak-btn');
+      if (streakBtn) {
+        streakBtn.style.display = isEmployer ? 'none' : 'flex';
+        document.getElementById('nav-streak-count').textContent = state.streak.current;
+      }
 
-                if (document.getElementById('navUserName')) document.getElementById('navUserName').innerText = userName;
-                if (document.getElementById('navUserAvatar')) document.getElementById('navUserAvatar').innerText = initial;
-                if (document.getElementById('dashboardUserName')) document.getElementById('dashboardUserName').innerText = userName;
-                if (document.getElementById('dashboardUserEmail') && userEmail) {
-                    document.getElementById('dashboardUserEmail').innerText = `${userEmail} • Matched shifts ready around your timetable`;
-                }
-                if (document.getElementById('mobileUserNameDisplay')) document.getElementById('mobileUserNameDisplay').innerText = userName;
-                if (document.getElementById('mobileUserAvatarInitial')) document.getElementById('mobileUserAvatarInitial').innerText = initial;
-            } else {
-                if (heroSection) heroSection.classList.remove('hidden');
-                if (studentDashboard) studentDashboard.classList.add('hidden');
+      // Render Desktop Navbar based on Role
+      const desktopNav = document.getElementById('desktop-nav-container');
+      if (isEmployer) {
+        desktopNav.innerHTML = `
+          <button data-nav="employers" onclick="switchView('employers')" class="nav-tab-btn px-3.5 py-2 rounded-xl text-xs font-bold ${state.activeView === 'employers' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'} transition-all">
+            🏪 Employer Hub &amp; Applicants
+          </button>
+          <button data-nav="post-shift" onclick="switchView('post-shift')" class="nav-tab-btn px-3.5 py-2 rounded-xl text-xs font-bold ${state.activeView === 'post-shift' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'} transition-all">
+            ➕ Post New Shift
+          </button>
+          <button onclick="openAuthModal()" class="px-3 py-2 rounded-xl text-xs font-bold bg-sky-50 text-sky-800 border border-sky-200">
+            Switch to Student View ↗
+          </button>
+        `;
+      } else {
+        desktopNav.innerHTML = `
+          <button data-nav="overview" onclick="switchView('overview')" class="nav-tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold transition-all">Overview</button>
+          <button data-nav="explore" onclick="switchView('explore')" class="nav-tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5">
+            Explore Jobs <span class="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-sky-100 text-sky-800">${state.jobs.length}</span>
+          </button>
+          <button data-nav="schedule" onclick="switchView('schedule')" class="nav-tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5">
+            Schedule Builder <span class="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-700">${calculateScheduleMetrics().freeHours}h</span>
+          </button>
+          <button data-nav="applications" onclick="switchView('applications')" class="nav-tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5">
+            Applications <span class="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-orange-100 text-orange-700">${state.appliedIds.length}</span>
+          </button>
+          <button data-nav="messages" onclick="switchView('messages')" class="nav-tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5">
+            Messages <span class="px-1.5 py-0.5 text-[10px] font-bold rounded-full ${totalUnread > 0 ? 'bg-rose-500 text-white animate-pulse' : 'bg-slate-200 text-slate-600'}">${totalUnread}</span>
+          </button>
+          <button data-nav="employers" onclick="switchView('employers')" class="nav-tab-btn px-3.5 py-2 rounded-xl text-xs font-bold text-orange-700 bg-orange-50 border border-orange-200 transition-all">
+            Switch to Employer Portal ↗
+          </button>
+        `;
+      }
 
-                if (guestNav) {
-                    guestNav.classList.remove('hidden');
-                    guestNav.classList.add('sm:flex');
-                }
-                if (userNav) {
-                    userNav.classList.remove('flex');
-                    userNav.classList.add('hidden');
-                }
-                if (mobileGuest) mobileGuest.classList.remove('hidden');
-                if (mobileUser) mobileUser.classList.add('hidden');
-            }
+      // Render Mobile Navbar based on Role
+      const mobileNav = document.getElementById('mobile-nav-container');
+      if (isEmployer) {
+        mobileNav.style.gridTemplateColumns = 'repeat(3, minmax(0, 1fr))';
+        mobileNav.innerHTML = `
+          <button data-nav="employers" onclick="switchView('employers')" class="mobile-nav-btn flex flex-col items-center justify-center py-2 rounded-2xl text-[11px] font-bold ${state.activeView === 'employers' ? 'bg-slate-900 text-white' : 'text-slate-600'}">
+            <span class="text-base mb-0.5">🏪</span>
+            <span>Applicants</span>
+          </button>
+          <button data-nav="post-shift" onclick="switchView('post-shift')" class="mobile-nav-btn flex flex-col items-center justify-center py-2 rounded-2xl text-[11px] font-bold ${state.activeView === 'post-shift' ? 'bg-slate-900 text-white' : 'text-slate-600'}">
+            <span class="text-base mb-0.5">➕</span>
+            <span>Post Shift</span>
+          </button>
+          <button onclick="openAuthModal()" class="mobile-nav-btn flex flex-col items-center justify-center py-2 rounded-2xl text-[11px] font-bold text-sky-700 bg-sky-50">
+            <span class="text-base mb-0.5">🎓</span>
+            <span>Student Mode</span>
+          </button>
+        `;
+      } else {
+        mobileNav.style.gridTemplateColumns = 'repeat(6, minmax(0, 1fr))';
+        mobileNav.innerHTML = `
+          <button data-nav="overview" onclick="switchView('overview')" class="mobile-nav-btn flex flex-col items-center justify-center py-1.5 rounded-2xl text-[10px] font-semibold ${state.activeView === 'overview' ? 'bg-slate-900 text-white font-bold' : 'text-slate-500'}">
+            <span class="text-sm mb-0.5">🏠</span><span>Home</span>
+          </button>
+          <button data-nav="explore" onclick="switchView('explore')" class="mobile-nav-btn flex flex-col items-center justify-center py-1.5 rounded-2xl text-[10px] font-semibold ${state.activeView === 'explore' ? 'bg-slate-900 text-white font-bold' : 'text-slate-500'}">
+            <span class="text-sm mb-0.5">🔍</span><span>Jobs</span>
+          </button>
+          <button data-nav="schedule" onclick="switchView('schedule')" class="mobile-nav-btn flex flex-col items-center justify-center py-1.5 rounded-2xl text-[10px] font-semibold ${state.activeView === 'schedule' ? 'bg-slate-900 text-white font-bold' : 'text-slate-500'}">
+            <span class="text-sm mb-0.5">📅</span><span>Schedule</span>
+          </button>
+          <button data-nav="applications" onclick="switchView('applications')" class="mobile-nav-btn relative flex flex-col items-center justify-center py-1.5 rounded-2xl text-[10px] font-semibold ${state.activeView === 'applications' ? 'bg-slate-900 text-white font-bold' : 'text-slate-500'}">
+            <span class="text-sm mb-0.5">📋</span><span>Applied</span>
+            ${state.appliedIds.length > 0 ? '<span class="absolute top-1 right-2 w-2 h-2 rounded-full bg-orange-500"></span>' : ''}
+          </button>
+          <button data-nav="messages" onclick="switchView('messages')" class="mobile-nav-btn relative flex flex-col items-center justify-center py-1.5 rounded-2xl text-[10px] font-semibold ${state.activeView === 'messages' ? 'bg-slate-900 text-white font-bold' : 'text-slate-500'}">
+            <span class="text-sm mb-0.5">💬</span><span>Chat</span>
+            ${totalUnread > 0 ? '<span class="absolute top-1 right-2 w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>' : ''}
+          </button>
+          <button data-nav="employers" onclick="switchView('employers')" class="mobile-nav-btn flex flex-col items-center justify-center py-1.5 rounded-2xl text-[10px] font-semibold text-orange-600 bg-orange-50">
+            <span class="text-sm mb-0.5">🏪</span><span>Employer</span>
+          </button>
+        `;
+      }
+    }
+
+    // ==================== VIEWS: STUDENT ====================
+    function renderOverviewView() {
+      const { freeHours } = calculateScheduleMetrics();
+      const evaluatedJobs = state.jobs.map(j => ({ ...j, eval: evaluateJobMatch(j) })).sort((a, b) => b.eval.matchPercent - a.eval.matchPercent);
+      const conflictFreeCount = evaluatedJobs.filter(j => !j.eval.hasConflict).length;
+      const topMatches = evaluatedJobs.slice(0, 2);
+      const streak = state.streak;
+      const progressPct = Math.min(100, Math.round((streak.current / streak.nextMilestone) * 100));
+
+      return `
+        <div class="space-y-5 sm:space-y-8 animate-view">
+          <div class="rounded-3xl bg-gradient-to-br from-slate-950/95 via-slate-900/95 to-blue-950/95 text-white p-5 sm:p-8 lg:p-10 shadow-xl border border-slate-800 relative overflow-hidden">
+            <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 sm:gap-6">
+              <div class="space-y-2.5 sm:space-y-3 max-w-2xl">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-[11px] sm:text-xs font-semibold text-sky-200">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
+                  <span>${escapeHtml(state.user.college)} • ${escapeHtml(state.user.campus)}</span>
+                </div>
+                <h1 class="font-display font-extrabold text-2xl sm:text-4xl tracking-tight">
+                  Welcome back, ${escapeHtml(state.user.name.split(' ')[0])}!
+                </h1>
+                <p class="text-slate-300 text-xs sm:text-base leading-relaxed">
+                  You have <strong class="text-emerald-400">${freeHours} free hours/week</strong> open in your college timetable, unlocking <strong class="text-white">${conflictFreeCount} conflict-free shifts</strong> near campus.
+                </p>
+                <div class="pt-1.5 flex flex-col sm:flex-row gap-2.5">
+                  <button onclick="switchView('explore')" class="px-5 py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs sm:text-sm shadow-md">
+                    Explore ${state.jobs.length} Verified Shifts →
+                  </button>
+                  <button onclick="switchView('employers')" class="px-5 py-3 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-white font-semibold text-xs sm:text-sm">
+                    🏪 Open Employer Portal
+                  </button>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 shrink-0">
+                <div class="rounded-2xl bg-white/5 border border-white/10 p-3 sm:p-4 text-center">
+                  <div class="font-display font-extrabold text-xl sm:text-3xl text-emerald-400">${freeHours}h</div>
+                  <div class="text-[10px] sm:text-[11px] text-slate-300">Free / Week</div>
+                </div>
+                <div class="rounded-2xl bg-white/5 border border-white/10 p-3 sm:p-4 text-center">
+                  <div class="font-display font-extrabold text-xl sm:text-3xl text-sky-400">${conflictFreeCount}</div>
+                  <div class="text-[10px] sm:text-[11px] text-slate-300">0-Clash Jobs</div>
+                </div>
+                <div onclick="openStreakModal()" class="cursor-pointer rounded-2xl bg-amber-500/15 border border-amber-400/30 p-3 sm:p-4 text-center hover:bg-amber-500/25">
+                  <div class="font-display font-extrabold text-xl sm:text-3xl text-amber-300">🔥 ${streak.current}</div>
+                  <div class="text-[10px] sm:text-[11px] text-amber-200">Shift Streak</div>
+                </div>
+                <div class="rounded-2xl bg-white/5 border border-white/10 p-3 sm:p-4 text-center">
+                  <div class="font-display font-extrabold text-xl sm:text-3xl text-orange-400">${state.appliedIds.length}</div>
+                  <div class="text-[10px] sm:text-[11px] text-slate-300">Applied</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white/95 backdrop-blur-xs rounded-3xl border border-slate-200/90 shadow-card p-4 sm:p-7">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+              <div class="space-y-2 max-w-xl">
+                <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-[11px] sm:text-xs font-extrabold">
+                  <span>🔥 ${streak.current}-Shift Streak</span><span>•</span><span class="text-emerald-700">+₹${streak.bonusPerHour}/hr Bonus Active</span>
+                </div>
+                <h2 class="font-display font-extrabold text-lg sm:text-2xl text-slate-900 leading-snug">
+                  Complete ${Math.max(0, streak.nextMilestone - streak.current)} more shift(s) to unlock Gold Tier (+₹25/hr)
+                </h2>
+                <div class="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden border border-slate-200/70">
+                  <div class="h-full bg-gradient-to-r from-amber-400 via-orange-500 to-emerald-500 rounded-full" style="width: ${progressPct}%"></div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="openStreakModal()" class="py-2.5 px-4 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs">🏅 Badges (${streak.badges.filter(b => b.unlocked).length})</button>
+                <button onclick="simulateQRShiftCheckIn()" class="py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm">📲 Simulate QR Check-In (+1)</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <button onclick="switchView('explore')" class="text-left p-4 sm:p-5 rounded-2xl bg-white/95 border border-slate-200 shadow-card hover:border-orange-300 group">
+              <div class="w-9 h-9 rounded-xl bg-orange-50 text-orange-600 font-bold flex items-center justify-center mb-2.5">🔍</div>
+              <h3 class="font-display font-bold text-slate-900 text-sm sm:text-base">Live Shift Feed</h3>
+              <p class="text-[11px] text-slate-500 mt-1">Filter Pune stores by radius and pay.</p>
+            </button>
+            <button onclick="switchView('schedule')" class="text-left p-4 sm:p-5 rounded-2xl bg-white/95 border border-slate-200 shadow-card hover:border-emerald-300 group">
+              <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 font-bold flex items-center justify-center mb-2.5">📅</div>
+              <h3 class="font-display font-bold text-slate-900 text-sm sm:text-base">Schedule Builder</h3>
+              <p class="text-[11px] text-slate-500 mt-1">Toggle lecture blocks vs. free shifts.</p>
+            </button>
+            <button onclick="switchView('messages')" class="text-left p-4 sm:p-5 rounded-2xl bg-white/95 border border-slate-200 shadow-card hover:border-sky-300 group">
+              <div class="w-9 h-9 rounded-xl bg-sky-50 text-sky-600 font-bold flex items-center justify-center mb-2.5">💬</div>
+              <h3 class="font-display font-bold text-slate-900 text-sm sm:text-base">Store Chat</h3>
+              <p class="text-[11px] text-slate-500 mt-1">Message managers securely.</p>
+            </button>
+            <button onclick="switchView('employers')" class="text-left p-4 sm:p-5 rounded-2xl bg-white/95 border border-slate-200 shadow-card hover:border-orange-400 group">
+              <div class="w-9 h-9 rounded-xl bg-orange-50 text-orange-700 font-bold flex items-center justify-center mb-2.5">🏪</div>
+              <h3 class="font-display font-bold text-slate-900 text-sm sm:text-base">Employer Portal</h3>
+              <p class="text-[11px] text-slate-500 mt-1">Manage applicant chats &amp; forms.</p>
+            </button>
+          </div>
+
+          <div class="space-y-3.5">
+            <div class="flex items-center justify-between">
+              <h2 class="font-display font-bold text-lg sm:text-xl text-slate-900">Top Timetable Matches</h2>
+              <button onclick="switchView('explore')" class="text-xs font-bold text-orange-600 hover:underline">View All →</button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              ${topMatches.map(job => renderJobCardHTML(job)).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderExploreView() {
+      const filteredJobs = getFilteredJobs();
+      return `
+        <div class="space-y-4 sm:space-y-6 animate-view">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
+            <div>
+              <h1 class="font-display font-extrabold text-xl sm:text-3xl text-slate-900">Explore Campus Shifts</h1>
+              <p class="text-xs sm:text-sm text-slate-500">Showing ${filteredJobs.length} of ${state.jobs.length} GSTIN-verified openings</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="toggleMobileFilterDrawer()" class="lg:hidden px-3.5 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs">
+                ⚙️ Filters (${state.filters.maxRadius.toFixed(1)}km)
+              </button>
+              <button onclick="switchView('schedule')" class="px-3.5 py-2.5 rounded-xl bg-emerald-50 text-emerald-800 font-bold text-xs border border-emerald-200">
+                📅 ${calculateScheduleMetrics().freeHours}h Free
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+            <aside class="${mobileUI.filtersExpanded ? 'block' : 'hidden'} lg:block lg:col-span-4 bg-white/95 rounded-3xl border border-slate-200/90 p-5 space-y-5 shadow-card">
+              <div class="flex items-center justify-between">
+                <h2 class="font-display font-bold text-base text-slate-900">Smart Filters</h2>
+                <button onclick="resetJobFilters()" class="text-xs font-semibold text-sky-600 hover:underline">Reset All</button>
+              </div>
+              <div class="space-y-2">
+                <div class="flex items-center justify-between text-xs font-semibold">
+                  <span class="text-slate-700">Max Distance</span>
+                  <span class="px-2 py-0.5 rounded-md bg-sky-50 text-sky-700 font-bold">${state.filters.maxRadius.toFixed(1)} km</span>
+                </div>
+                <input type="range" min="0.5" max="10" step="0.5" value="${state.filters.maxRadius}" oninput="updateFilter('maxRadius', parseFloat(this.value))" class="w-full accent-sky-600" />
+              </div>
+              <div class="space-y-2">
+                <label class="block text-xs font-semibold text-slate-700">Shift Window</label>
+                <div class="grid grid-cols-2 gap-2">
+                  ${[{ id: 'all', label: 'All' }, { id: 'morning', label: 'Morning' }, { id: 'afternoon', label: 'Afternoon' }, { id: 'evening', label: 'Evening' }].map(opt => `
+                    <button onclick="updateFilter('slotFilter', '${opt.id}')" class="py-2.5 px-3 rounded-xl text-xs font-semibold border ${state.filters.slotFilter === opt.id ? 'bg-slate-900 text-white border-slate-900' : 'bg-slate-50 text-slate-700 border-slate-200'}">${opt.label}</button>
+                  `).join('')}
+                </div>
+              </div>
+              <label class="flex items-center justify-between p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200 cursor-pointer">
+                <div>
+                  <span class="block text-xs font-bold text-slate-900">Zero Class Conflicts Only</span>
+                  <span class="block text-[11px] text-slate-600">Hide lecture overlaps</span>
+                </div>
+                <input type="checkbox" ${state.filters.hideConflicts ? 'checked' : ''} onchange="updateFilter('hideConflicts', this.checked)" class="w-4 h-4 accent-emerald-600 rounded" />
+              </label>
+            </aside>
+
+            <div class="lg:col-span-8 space-y-4">
+              ${filteredJobs.length === 0 ? '<div class="bg-white p-8 rounded-3xl text-center text-slate-500">No shifts match these filters.</div>' : `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${filteredJobs.map(job => renderJobCardHTML(job)).join('')}</div>`}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderJobCardHTML(job) {
+      const isApplied = state.appliedIds.includes(job.id);
+      return `
+        <article class="bg-white/95 rounded-3xl border border-slate-200/90 shadow-card p-4 sm:p-5 flex flex-col justify-between gap-3.5">
+          <div class="space-y-3">
+            <div class="flex items-start justify-between gap-2">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-10 h-10 rounded-2xl bg-slate-900 text-white font-display font-extrabold flex items-center justify-center shrink-0">${escapeHtml(job.company.charAt(0))}</div>
+                <div class="min-w-0">
+                  <h3 class="font-display font-bold text-slate-900 text-sm sm:text-base truncate">${escapeHtml(job.title)}</h3>
+                  <p class="text-xs font-medium text-slate-500 truncate">${escapeHtml(job.company)} • ${escapeHtml(job.area)}</p>
+                </div>
+              </div>
+              <span class="px-2.5 py-1 rounded-full border text-[10px] font-bold shrink-0 bg-sky-50 text-sky-800 border-sky-200">${job.eval.matchPercent}% Match</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5 text-[11px] font-medium text-slate-600">
+              <span class="px-2.5 py-1 rounded-lg bg-slate-100">📍 ${job.distance} km</span>
+              <span class="px-2.5 py-1 rounded-lg bg-slate-100">🕒 ${escapeHtml(job.timeLabel)}</span>
+            </div>
+            ${job.eval.hasConflict ? `<div class="px-3 py-2 rounded-xl bg-rose-50 border border-rose-200 text-[11px] text-rose-700">⚠️ Class overlap on ${job.eval.conflictDays.join(', ')}</div>` : `<div class="px-3 py-2 rounded-xl bg-emerald-50 border border-emerald-200 text-[11px] text-emerald-800">✅ 100% Conflict-Free</div>`}
+          </div>
+          <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+            <div>
+              <span class="text-[10px] text-slate-400 font-bold block">Hourly Pay</span>
+              <span class="font-display font-extrabold text-base text-emerald-700">₹${job.pay}/hr <span class="text-xs text-amber-600">(+₹${state.streak.bonusPerHour})</span></span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button onclick="openChatWithStore(${job.id})" class="px-2.5 py-2 rounded-xl border border-slate-200 hover:bg-sky-50 text-xs">💬</button>
+              <button onclick="openJobDetail(${job.id})" class="px-2.5 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs">Details</button>
+              <button onclick="toggleJobApplication(${job.id})" class="px-3.5 py-2 rounded-xl font-bold text-xs ${isApplied ? 'bg-emerald-600 text-white' : 'bg-orange-500 text-white'}">${isApplied ? 'Applied ✓' : 'Apply'}</button>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderScheduleView() {
+      const { freeHours, freeSlotsCount } = calculateScheduleMetrics();
+      const activeDay = mobileUI.selectedDay || 'Mon';
+      return `
+        <div class="space-y-5 animate-view">
+          <div>
+            <h1 class="font-display font-extrabold text-xl sm:text-3xl text-slate-900">Interactive Schedule Builder</h1>
+            <p class="text-xs sm:text-sm text-slate-500">Tap time blocks to toggle between In Class and Free for Shifts.</p>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <div class="bg-white p-4 rounded-2xl border shadow-card">
+              <span class="text-xs text-slate-500">Weekly Free Hours</span>
+              <div class="font-display font-extrabold text-xl text-emerald-600">${freeHours} hrs (${freeSlotsCount} blocks)</div>
+            </div>
+            <div class="bg-white p-4 rounded-2xl border shadow-card">
+              <span class="text-xs text-slate-500">Earning Potential</span>
+              <div class="font-display font-extrabold text-xl text-emerald-700">₹${(freeHours * 175).toLocaleString()}/wk</div>
+            </div>
+          </div>
+          <div class="bg-white rounded-3xl border p-4 space-y-4">
+            <div class="grid grid-cols-6 gap-1.5">
+              ${DAYS.map(day => `
+                <button onclick="selectMobileScheduleDay('${day}')" class="py-2.5 rounded-2xl border text-center ${day === activeDay ? 'bg-slate-900 text-white border-slate-900' : 'bg-slate-50 text-slate-700'}">
+                  <span class="block font-bold text-xs">${day}</span>
+                </button>
+              `).join('')}
+            </div>
+            <div class="space-y-2.5">
+              ${Object.entries(SLOT_META).map(([slotKey, meta]) => {
+                const isFree = Boolean(state.schedule[activeDay] && state.schedule[activeDay][slotKey]);
+                return `
+                  <button onclick="toggleScheduleSlot('${activeDay}', '${slotKey}')" class="w-full p-4 rounded-2xl border text-left flex items-center justify-between ${isFree ? 'bg-emerald-50 border-emerald-300 text-emerald-950' : 'bg-rose-50 border-rose-200 text-rose-950'}">
+                    <div>
+                      <div class="font-display font-bold text-sm">${activeDay} • ${meta.label} (${meta.time})</div>
+                      <div class="text-xs opacity-75">${meta.hours} hrs</div>
+                    </div>
+                    <span class="px-3 py-1.5 rounded-xl font-bold text-xs ${isFree ? 'bg-emerald-600 text-white' : 'bg-rose-100 text-rose-700'}">${isFree ? '✅ Free Slot' : '📚 In Class'}</span>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderApplicationsView() {
+      const appliedJobs = state.jobs.filter(j => state.appliedIds.includes(j.id)).map(j => ({ ...j, eval: evaluateJobMatch(j) }));
+      return `
+        <div class="space-y-5 animate-view">
+          <div>
+            <h1 class="font-display font-extrabold text-xl sm:text-3xl text-slate-900">My Shift Applications</h1>
+            <p class="text-xs sm:text-sm text-slate-500">Track your active applications and earnings.</p>
+          </div>
+          ${appliedJobs.length === 0 ? '<div class="bg-white p-10 rounded-3xl text-center text-slate-500">No applications yet. Browse shifts in Explore Jobs!</div>' : `
+            <div class="space-y-3">
+              ${appliedJobs.map(job => `
+                <div class="bg-white p-5 rounded-3xl border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[11px] font-bold">Applied ✓</span>
+                    <h3 class="font-display font-bold text-base mt-1">${escapeHtml(job.title)} — ${escapeHtml(job.company)}</h3>
+                    <p class="text-xs text-slate-500">📍 ${escapeHtml(job.area)} • 🕒 ${escapeHtml(job.timeLabel)}</p>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <button onclick="openChatWithStore(${job.id})" class="px-3 py-2 rounded-xl bg-sky-50 text-sky-800 text-xs font-bold">💬 Chat</button>
+                    <button onclick="toggleJobApplication(${job.id})" class="px-3 py-2 rounded-xl border border-rose-200 text-rose-600 text-xs">Withdraw</button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `}
+        </div>
+      `;
+    }
+
+    function renderMessagesView() {
+      const chatList = Object.values(state.chats);
+      if (!state.chats[state.activeChatJobId] && chatList.length > 0) state.activeChatJobId = chatList[0].jobId;
+      const activeChat = state.chats[state.activeChatJobId];
+
+      return `
+        <div class="space-y-4 animate-view">
+          <div>
+            <h1 class="font-display font-extrabold text-xl sm:text-3xl text-slate-900">In-App Store Messaging</h1>
+            <p class="text-xs sm:text-sm text-slate-500">Coordinate shift timings with 100% phone number privacy.</p>
+          </div>
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+            <div class="hidden lg:flex lg:col-span-4 bg-white rounded-3xl border p-4 space-y-2 flex-col">
+              <span class="text-xs font-bold uppercase text-slate-400">Store Threads</span>
+              ${chatList.map(chat => `
+                <button onclick="selectConversation(${chat.jobId})" class="w-full text-left p-3.5 rounded-2xl border ${Number(chat.jobId) === Number(state.activeChatJobId) ? 'bg-slate-900 text-white' : 'bg-white hover:bg-slate-50 text-slate-800'}">
+                  <div class="font-bold text-sm truncate">${escapeHtml(chat.storeName)}</div>
+                  <div class="text-xs opacity-75 truncate">${escapeHtml(chat.managerName)}</div>
+                </button>
+              `).join('')}
+            </div>
+            <div class="lg:col-span-8 bg-white rounded-3xl border flex flex-col justify-between min-h-[460px] overflow-hidden">
+              ${activeChat ? `
+                <div class="p-4 border-b bg-slate-50 flex items-center justify-between">
+                  <div>
+                    <h3 class="font-bold text-sm text-slate-900">${escapeHtml(activeChat.storeName)}</h3>
+                    <p class="text-xs text-slate-500">${escapeHtml(activeChat.managerName)}</p>
+                  </div>
+                  <span class="text-xs font-mono bg-white px-2.5 py-1 rounded-xl border">📞 ${escapeHtml(activeChat.maskedPhone)}</span>
+                </div>
+                <div id="chat-messages-scroll" class="flex-1 p-4 space-y-3 overflow-y-auto max-h-[320px]">
+                  ${activeChat.messages.map(msg => `
+                    <div class="flex ${msg.sender === 'student' ? 'justify-end' : 'justify-start'}">
+                      <div class="max-w-[80%] rounded-2xl px-3.5 py-2.5 text-xs sm:text-sm ${msg.sender === 'student' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-800 border'}">
+                        <p>${escapeHtml(msg.text)}</p>
+                        <span class="block text-[10px] mt-1 opacity-70">${escapeHtml(msg.time)}</span>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+                <form onsubmit="handleSendMessage(event)" class="p-3 border-t bg-white flex items-center gap-2">
+                  <input id="chat-input-box" type="text" required placeholder="Type message..." class="flex-1 px-3.5 py-2.5 rounded-xl border text-sm" />
+                  <button type="submit" class="px-5 py-2.5 rounded-xl bg-orange-500 text-white font-bold text-sm">Send</button>
+                </form>
+              ` : '<div class="p-8 text-center">Select a chat.</div>'}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ==================== VIEWS: EMPLOYER DUAL INTERFACE ====================
+    function renderEmployersPortalView() {
+      const applicants = state.employerApplicants;
+      const activeApp = applicants.find(a => a.id === state.activeEmployerApplicantId) || applicants[0];
+
+      return `
+        <div class="space-y-6 animate-view">
+          <div class="rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-white p-6 sm:p-8 shadow-xl">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <span class="px-3 py-1 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 text-xs font-bold">🏪 Employer Portal • Store Manager View</span>
+                <h1 class="font-display font-extrabold text-2xl sm:text-3xl mt-2">${escapeHtml(state.user.college)}</h1>
+                <p class="text-slate-300 text-xs sm:text-sm mt-1">Review student applicants, chat directly, assign KYC &amp; uniform forms, and manage shift rosters.</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="switchView('post-shift')" class="px-4 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs shadow-md">
+                  + Post New Shift
+                </button>
+                <button onclick="openAuthModal()" class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-semibold text-xs border border-white/20">
+                  Switch to Student View ↗
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+            <!-- Left Applicant List -->
+            <div class="lg:col-span-5 bg-white rounded-3xl border p-4 space-y-3 shadow-card">
+              <div class="flex items-center justify-between px-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Student Applicants (${applicants.length})</span>
+                <span class="text-xs font-semibold text-emerald-600">Active Roster</span>
+              </div>
+              <div class="space-y-2">
+                ${applicants.map(app => {
+                  const isSelected = app.id === state.activeEmployerApplicantId;
+                  return `
+                    <button onclick="selectEmployerApplicant(${app.id})" class="w-full text-left p-3.5 rounded-2xl border transition-all ${isSelected ? 'bg-slate-900 text-white border-slate-900 shadow-sm' : 'bg-white hover:bg-slate-50 text-slate-800 border-slate-200'}">
+                      <div class="flex items-center justify-between">
+                        <h4 class="font-display font-bold text-sm">${escapeHtml(app.name)}</h4>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${app.status === 'Hired ✓' ? 'bg-emerald-500 text-white' : 'bg-amber-500/20 text-amber-300'}">${app.status}</span>
+                      </div>
+                      <p class="text-xs ${isSelected ? 'text-sky-300' : 'text-sky-700'} font-medium mt-0.5">${escapeHtml(app.roleApplied)}</p>
+                      <div class="flex items-center justify-between text-[11px] ${isSelected ? 'text-slate-300' : 'text-slate-500'} mt-1 pt-1 border-t ${isSelected ? 'border-slate-800' : 'border-slate-100'}">
+                        <span>🔥 ${app.reliability}</span>
+                        <span>Form: ${app.formStatus}</span>
+                      </div>
+                    </button>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+
+            <!-- Right Employer Messaging & Form Management Workspace -->
+            <div class="lg:col-span-7 bg-white rounded-3xl border shadow-card flex flex-col justify-between min-h-[500px] overflow-hidden">
+              ${activeApp ? `
+                <div class="p-4 border-b bg-slate-50 flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <h3 class="font-bold text-base text-slate-900">${escapeHtml(activeApp.name)}</h3>
+                      <span class="px-2 py-0.5 rounded-full bg-sky-50 border border-sky-200 text-sky-800 text-[10px] font-bold">${escapeHtml(activeApp.college)}</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-0.5">Applied for <strong>${escapeHtml(activeApp.roleApplied)}</strong> at ${escapeHtml(activeApp.store)}</p>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <button onclick="openAssignFormModal(${activeApp.id})" class="px-3 py-2 rounded-xl bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-800 text-xs font-bold">
+                      📋 Assign Form (${activeApp.assignedForm})
+                    </button>
+                    <button onclick="toggleApplicantHired(${activeApp.id})" class="px-3 py-2 rounded-xl ${activeApp.status === 'Hired ✓' ? 'bg-emerald-600 text-white' : 'bg-slate-900 text-white'} text-xs font-bold">
+                      ${activeApp.status === 'Hired ✓' ? 'Hired ✓' : 'Mark Hired 🚀'}
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Chat & Form Submission History -->
+                <div id="employer-chat-scroll" class="flex-1 p-4 space-y-3 overflow-y-auto max-h-[320px]">
+                  <div class="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-1">
+                    <div class="font-bold">📎 Assigned Digital Form Status: <span class="text-emerald-700">${activeApp.formStatus}</span></div>
+                    <div>Form Template: <strong>${activeApp.assignedForm}</strong></div>
+                  </div>
+                  ${activeApp.messages.map(m => `
+                    <div class="flex ${m.sender === 'store' ? 'justify-end' : 'justify-start'}">
+                      <div class="max-w-[80%] rounded-2xl px-3.5 py-2.5 text-xs sm:text-sm ${m.sender === 'store' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-800 border'}">
+                        <p>${escapeHtml(m.text)}</p>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+
+                <form onsubmit="handleEmployerSendMessage(event)" class="p-3 border-t bg-white flex items-center gap-2">
+                  <input id="employer-chat-input" type="text" required placeholder="Message applicant or request shift confirmation..." class="flex-1 px-3.5 py-2.5 rounded-xl border text-sm" />
+                  <button type="submit" class="px-5 py-2.5 rounded-xl bg-orange-500 text-white font-bold text-sm">Send</button>
+                </form>
+              ` : '<div class="p-8 text-center">Select an applicant.</div>'}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPostShiftView() {
+      return `
+        <div class="space-y-6 animate-view max-w-3xl mx-auto">
+          <div class="flex items-center justify-between">
+            <div>
+              <h1 class="font-display font-extrabold text-xl sm:text-3xl text-slate-900">Post a Verified Shift</h1>
+              <p class="text-xs sm:text-sm text-slate-500">Publish GSTIN-verified part-time shifts directly to Pune students.</p>
+            </div>
+            <button onclick="fillSampleEmployerJob()" class="px-3.5 py-2 rounded-xl bg-sky-50 border border-sky-200 text-sky-800 text-xs font-bold">✨ Auto-Fill Starbucks Shift</button>
+          </div>
+
+          <form onsubmit="handleEmployerPost(event)" class="bg-white rounded-3xl border p-6 sm:p-8 space-y-4 shadow-card">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="emp-company" class="block text-xs font-semibold text-slate-700 mb-1">Store / Brand Name *</label>
+                <input id="emp-company" type="text" required placeholder="Starbucks Coffee" class="w-full px-3.5 py-2.5 rounded-xl border text-sm" />
+              </div>
+              <div>
+                <label for="emp-title" class="block text-xs font-semibold text-slate-700 mb-1">Shift Role Title *</label>
+                <input id="emp-title" type="text" required placeholder="Evening Barista" class="w-full px-3.5 py-2.5 rounded-xl border text-sm" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="emp-area" class="block text-xs font-semibold text-slate-700 mb-1">Store Locality (Pune) *</label>
+                <input id="emp-area" type="text" required placeholder="Koregaon Park, Pune" class="w-full px-3.5 py-2.5 rounded-xl border text-sm" />
+              </div>
+              <div>
+                <label for="emp-distance" class="block text-xs font-semibold text-slate-700 mb-1">Distance from Campus (km) *</label>
+                <input id="emp-distance" type="number" step="0.1" min="0.2" max="15" required placeholder="2.5" class="w-full px-3.5 py-2.5 rounded-xl border text-sm" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label for="emp-slot" class="block text-xs font-semibold text-slate-700 mb-1">Shift Window *</label>
+                <select id="emp-slot" class="w-full px-3.5 py-2.5 rounded-xl border text-sm bg-white">
+                  <option value="evening">Evening (16:00 - 20:00)</option>
+                  <option value="afternoon">Afternoon (13:00 - 16:00)</option>
+                  <option value="morning">Morning (09:00 - 13:00)</option>
+                </select>
+              </div>
+              <div>
+                <label for="emp-time" class="block text-xs font-semibold text-slate-700 mb-1">Display Timing *</label>
+                <input id="emp-time" type="text" required placeholder="5:00 PM - 9:00 PM" class="w-full px-3.5 py-2.5 rounded-xl border text-sm" />
+              </div>
+              <div>
+                <label for="emp-pay" class="block text-xs font-semibold text-slate-700 mb-1">Hourly Pay (₹/hr) *</label>
+                <input id="emp-pay" type="number" min="100" max="500" required placeholder="195" class="w-full px-3.5 py-2.5 rounded-xl border text-sm" />
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label for="emp-gstin" class="block text-xs font-semibold text-slate-700">15-Digit Store GSTIN *</label>
+                <span id="gstin-status-badge" class="text-[11px] font-semibold text-slate-400">Format: 27AAACA1234A1Z5</span>
+              </div>
+              <input id="emp-gstin" type="text" maxlength="15" required oninput="validateGSTINLive(this.value)" placeholder="27AAACT1234F1Z5" class="w-full px-3.5 py-2.5 rounded-xl border text-sm font-mono uppercase" />
+            </div>
+
+            <button type="submit" class="w-full py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm shadow-md">
+              Publish Verified Shift Live →
+            </button>
+          </form>
+        </div>
+      `;
+    }
+
+    // ==================== INTERACTION HANDLERS ====================
+    function updateFilter(key, value) {
+      state.filters[key] = value;
+      saveState();
+      renderApp();
+    }
+
+    function resetJobFilters() {
+      state.filters = structuredClone(DEFAULT_STATE.filters);
+      saveState();
+      renderApp();
+    }
+
+    function toggleScheduleSlot(day, slotKey) {
+      if (!state.schedule[day]) state.schedule[day] = {};
+      state.schedule[day][slotKey] = !state.schedule[day][slotKey];
+      saveState();
+      renderApp();
+    }
+
+    function toggleJobApplication(jobId) {
+      const idx = state.appliedIds.indexOf(jobId);
+      if (idx === -1) {
+        state.appliedIds.push(jobId);
+        showToast('Applied to shift successfully!', 'success');
+      } else {
+        state.appliedIds.splice(idx, 1);
+        showToast('Withdrew application.', 'info');
+      }
+      saveState();
+      renderApp();
+    }
+
+    function openJobDetail(jobId) {
+      const job = state.jobs.find(j => j.id === jobId);
+      if (!job) return;
+      document.getElementById('job-detail-content').innerHTML = `
+        <div class="flex items-start justify-between">
+          <div>
+            <h3 class="font-display font-extrabold text-lg text-slate-900">${escapeHtml(job.title)}</h3>
+            <p class="text-xs text-slate-500">${escapeHtml(job.company)} • ${escapeHtml(job.area)}</p>
+          </div>
+          <button onclick="closeModal('job-detail-modal')" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold">✕</button>
+        </div>
+        <p class="text-xs sm:text-sm text-slate-600">${escapeHtml(job.description)}</p>
+        <div class="p-3 rounded-xl bg-slate-50 text-xs">
+          <div><strong>Timing:</strong> ${escapeHtml(job.timeLabel)} (${job.days.join(', ')})</div>
+          <div><strong>GSTIN:</strong> ${escapeHtml(job.gstin)}</div>
+        </div>
+        <button onclick="closeModal('job-detail-modal'); toggleJobApplication(${job.id});" class="w-full py-2.5 rounded-xl bg-orange-500 text-white font-bold text-xs">Apply Now</button>
+      `;
+      const modal = document.getElementById('job-detail-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function openChatWithStore(jobId) {
+      state.activeChatJobId = jobId;
+      switchView('messages');
+    }
+
+    function selectConversation(jobId) {
+      state.activeChatJobId = jobId;
+      if (state.chats[jobId]) state.chats[jobId].unread = 0;
+      saveState();
+      renderApp();
+    }
+
+    function handleSendMessage(e) {
+      e.preventDefault();
+      const input = document.getElementById('chat-input-box');
+      if (!input || !input.value.trim()) return;
+      const activeChat = state.chats[state.activeChatJobId];
+      if (!activeChat) return;
+      activeChat.messages.push({ id: Date.now(), sender: 'student', text: input.value.trim(), time: 'Just now' });
+      input.value = '';
+      saveState();
+      renderApp();
+    }
+
+    // Employer actions
+    function selectEmployerApplicant(id) {
+      state.activeEmployerApplicantId = id;
+      renderApp();
+    }
+
+    function toggleApplicantHired(id) {
+      const app = state.employerApplicants.find(a => a.id === id);
+      if (app) {
+        app.status = app.status === 'Hired ✓' ? 'Shortlisted' : 'Hired ✓';
+        saveState();
+        renderApp();
+        showToast(`Updated ${app.name}'s status to ${app.status}`, 'success');
+      }
+    }
+
+    function openAssignFormModal(id) {
+      state.activeEmployerApplicantId = id;
+      const modal = document.getElementById('assign-form-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function submitAssignForm() {
+      const formSelect = document.getElementById('modal-form-select');
+      const formName = formSelect.value;
+      const app = state.employerApplicants.find(a => a.id === state.activeEmployerApplicantId);
+      if (app) {
+        app.assignedForm = formName;
+        app.formStatus = 'Pending Submission';
+        app.messages.push({ sender: 'store', text: `📋 Assigned digital form: "${formName}". Please complete before your shift.` });
+        saveState();
+        closeModal('assign-form-modal');
+        renderApp();
+        showToast(`Assigned "${formName}" to ${app.name}`, 'success');
+      }
+    }
+
+    function handleEmployerSendMessage(e) {
+      e.preventDefault();
+      const input = document.getElementById('employer-chat-input');
+      if (!input || !input.value.trim()) return;
+      const app = state.employerApplicants.find(a => a.id === state.activeEmployerApplicantId);
+      if (!app) return;
+      app.messages.push({ sender: 'store', text: input.value.trim() });
+      input.value = '';
+      saveState();
+      renderApp();
+    }
+
+    function validateGSTINLive(value) {
+      const badge = document.getElementById('gstin-status-badge');
+      if (!badge) return;
+      const clean = value.trim().toUpperCase();
+      if (!clean) {
+        badge.textContent = 'Format: 27AAACA1234A1Z5';
+        badge.className = 'text-[11px] font-semibold text-slate-400';
+      } else if (GSTIN_REGEX.test(clean)) {
+        badge.textContent = '✓ Valid Maharashtra GSTIN';
+        badge.className = 'text-[11px] font-bold text-emerald-600';
+      } else {
+        badge.textContent = '15-char GSTIN required';
+        badge.className = 'text-[11px] font-semibold text-amber-600';
+      }
+    }
+
+    function fillSampleEmployerJob() {
+      document.getElementById('emp-company').value = 'Starbucks Coffee';
+      document.getElementById('emp-title').value = 'Evening Shift Barista';
+      document.getElementById('emp-area').value = 'Koregaon Park, Pune';
+      document.getElementById('emp-distance').value = '2.5';
+      document.getElementById('emp-slot').value = 'evening';
+      document.getElementById('emp-time').value = '5:00 PM - 9:00 PM';
+      document.getElementById('emp-pay').value = '195';
+      document.getElementById('emp-gstin').value = '27AAACT1234F1Z5';
+      validateGSTINLive('27AAACT1234F1Z5');
+    }
+
+    function handleEmployerPost(e) {
+      e.preventDefault();
+      const gstin = document.getElementById('emp-gstin').value.trim().toUpperCase();
+      if (!GSTIN_REGEX.test(gstin)) {
+        showToast('Please enter a valid 15-character GSTIN.', 'error');
+        return;
+      }
+      const newJob = {
+        id: Date.now(),
+        title: document.getElementById('emp-title').value.trim(),
+        company: document.getElementById('emp-company').value.trim(),
+        area: document.getElementById('emp-area').value.trim(),
+        distance: parseFloat(document.getElementById('emp-distance').value) || 2.0,
+        slot: document.getElementById('emp-slot').value,
+        timeLabel: document.getElementById('emp-time').value.trim(),
+        days: ['Mon', 'Wed', 'Fri', 'Sat'],
+        pay: parseInt(document.getElementById('emp-pay').value, 10) || 175,
+        gstin,
+        category: 'Verified Store',
+        description: 'Assist store crew and deliver customer hospitality.'
+      };
+      state.jobs.unshift(newJob);
+      state.activeView = 'employers';
+      saveState();
+      renderApp();
+      showToast(`Published "${newJob.title}" at ${newJob.company}!`, 'success');
+    }
+
+    function simulateQRShiftCheckIn() {
+      state.streak.current += 1;
+      showToast(`🔥 QR Checked In! Streak is now ${state.streak.current} shifts!`, 'success');
+      saveState();
+      renderApp();
+    }
+
+    function openStreakModal() {
+      const s = state.streak;
+      document.getElementById('streak-modal-content').innerHTML = `
+        <div class="flex items-start justify-between">
+          <div>
+            <h3 class="font-display font-extrabold text-lg text-slate-900">${s.current}-Shift Active Streak</h3>
+            <p class="text-xs text-slate-500">${s.reliabilityScore}% Reliability Score</p>
+          </div>
+          <button onclick="closeModal('streak-modal')" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold">✕</button>
+        </div>
+        <div class="grid grid-cols-3 gap-2 text-center">
+          <div class="p-3 rounded-2xl bg-amber-50 border"><div class="font-bold text-base">🔥 ${s.current}</div><div class="text-[10px]">Streak</div></div>
+          <div class="p-3 rounded-2xl bg-emerald-50 border"><div class="font-bold text-base">+₹${s.bonusPerHour}/hr</div><div class="text-[10px]">Bonus</div></div>
+          <div class="p-3 rounded-2xl bg-sky-50 border"><div class="font-bold text-base">${s.reliabilityScore}%</div><div class="text-[10px]">Reliability</div></div>
+        </div>
+        <button onclick="closeModal('streak-modal')" class="w-full py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs">Close</button>
+      `;
+      const modal = document.getElementById('streak-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function openAuthModal() {
+      document.getElementById('modal-user-name').value = state.user.name;
+      document.getElementById('modal-user-org').value = state.user.college;
+      document.getElementById('modal-user-role').value = state.user.role;
+      const modal = document.getElementById('auth-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function saveProfileModal(e) {
+      e.preventDefault();
+      state.user.name = document.getElementById('modal-user-name').value.trim() || state.user.name;
+      state.user.college = document.getElementById('modal-user-org').value.trim() || state.user.college;
+      state.user.role = document.getElementById('modal-user-role').value;
+      state.activeView = state.user.role === 'Employer' ? 'employers' : 'overview';
+      saveState();
+      closeModal('auth-modal');
+      renderApp();
+      showToast(`Switched interface to ${state.user.role} mode.`, 'success');
+    }
+
+    function closeModal(id) {
+      const modal = document.getElementById(id);
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function resetAllDemoData() {
+      localStorage.removeItem(STORAGE_KEY);
+      state = structuredClone(DEFAULT_STATE);
+      state.isAuthenticated = true;
+      closeModal('auth-modal');
+      renderApp();
+      showToast('Demo data reset.', 'info');
+    }
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `pointer-events-auto px-4 py-3 rounded-2xl border shadow-lg text-xs font-semibold animate-toast ${type === 'success' ? 'bg-emerald-900 text-white' : 'bg-slate-900 text-white'}`;
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3200);
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function renderApp() {
+      const authScreen = document.getElementById('auth-landing-screen');
+      const appShell = document.getElementById('main-app-shell');
+
+      if (!state.isAuthenticated) {
+        authScreen.classList.remove('hidden');
+        authScreen.classList.add('flex');
+        appShell.classList.add('hidden');
+        appShell.classList.remove('flex');
+        return;
+      }
+
+      authScreen.classList.add('hidden');
+      authScreen.classList.remove('flex');
+      appShell.classList.remove('hidden');
+      appShell.classList.add('flex');
+
+      updateGlobalChromes();
+      const viewport = document.getElementById('app-viewport');
+      const isEmployer = state.user.role === 'Employer';
+
+      if (isEmployer) {
+        if (state.activeView === 'post-shift') {
+          viewport.innerHTML = renderPostShiftView();
+        } else {
+          viewport.innerHTML = renderEmployersPortalView();
         }
-
-        function logoutUser() {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            localStorage.removeItem('userName');
-            updateAuthUI();
+      } else {
+        switch (state.activeView) {
+          case 'explore': viewport.innerHTML = renderExploreView(); break;
+          case 'schedule': viewport.innerHTML = renderScheduleView(); break;
+          case 'applications': viewport.innerHTML = renderApplicationsView(); break;
+          case 'messages': viewport.innerHTML = renderMessagesView(); break;
+          case 'employers': viewport.innerHTML = renderEmployersPortalView(); break;
+          case 'overview':
+          default: viewport.innerHTML = renderOverviewView(); break;
         }
-    </script>
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => { renderApp(); });
+  </script>
 </body>
 </html>
